@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Budget Lodging | Samarth Lodging - Easy Online Booking</title>
+    <meta name="description" content="Book budget lodging near me at Samarth Lodging. Easy online booking for AC and Non-AC rooms. Affordable rates, instant confirmation.">
+    <meta name="keywords" content="budget lodging near me, book lodging, hotel booking, guest house booking, online room booking">
+    <meta name="author" content="Samarth Lodging">
+    <meta name="robots" content="index, follow">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="error-handler.js"></script>
+    <script src="session-utils.js"></script>
+    <script src="sanitizer.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B80797PB0F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-B80797PB0F');
+    </script>
+<script>
+var firebaseConfig = {
+    apiKey: "AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",
+    authDomain: "samrtha-lodging.firebaseapp.com",
+    projectId: "samrtha-lodging",
+    appId: "1:254916752014:web:2bfa52b2f81c70ece78fdf"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+var publicPages = ['login.html', 'index.html', 'rooms.html', 'main.html'];
+var currentPage = window.location.pathname.split('/').pop() || 'booking.html';
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('userEmail', user.email || '');
+    sessionStorage.setItem('userName', user.displayName || (user.email ? user.email.split('@')[0] : ''));
+    sessionStorage.setItem('userId', user.uid || '');
+    
+    localStorage.setItem('userEmail', user.email || '');
+    localStorage.setItem('userName', user.displayName || (user.email ? user.email.split('@')[0] : ''));
+    localStorage.setItem('userId', user.uid || '');
+    if (typeof checkLoginStatus === 'function') checkLoginStatus();
+  } else {
+    if (!publicPages.includes(currentPage)) {
+      sessionStorage.setItem('redirectedToLogin', 'true');
+      window.location.href = 'login.html';
+    }
+  }
+});
+</script>
+</head>
+<body>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" id="skeletonLoader">
+        <div class="skeleton-header">
+            <div class="skeleton-logo"></div>
+            <div class="skeleton-title">
+                <div class="skeleton-title-line"></div>
+                <div class="skeleton-title-line short"></div>
+            </div>
+        </div>
+        <div class="skeleton-content">
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Reminder Message -->
+    <div id="loginReminder" class="login-reminder" style="display: none;">
+        <div class="login-reminder-content">
+            <span class="login-reminder-icon">🔐</span>
+            <p>Please <a href="login.html">login</a> or <a href="login.html">sign up</a> to book your stay</p>
+            <button class="login-reminder-close" onclick="closeLoginReminder()">&times;</button>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.jpg" alt="Samarth Lodging Logo">
+                <span>Samarth Lodging</span>
+            </div>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="main.html" class="nav-link">About Us</a>
+                <a href="rooms.html" class="nav-link">Rooms</a>
+                <a href="booking.html" class="nav-link active">Book Now</a>
+                <a href="login.html" class="nav-link" id="loginLink">Login</a>
+                <a href="profile.html" class="nav-link" id="meLink" style="display: none;">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div style="padding: 20px;">
+        <a href="index.html" style="color: #fff; text-decoration: none; font-size: 16px; display: inline-flex; align-items: center; gap: 5px;">
+            ← Back to Home
+        </a>
+    </div>
+
+    <!-- Booking Section -->
+    <section class="section booking-section">
+        <h2 class="section-title" style="margin-bottom: 50px;">Book Your Stay</h2>
+        <div class="booking-container">
+            <div class="booking-form">
+                <div class="mouse-glow"></div>
+                <!-- Progress Steps -->
+                <div class="booking-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Personal Info</div>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Room Details</div>
+                    </div>
+                    <div class="progress-line"></div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Review & Pay</div>
+                    </div>
+                </div>
+
+                <form id="bookingForm">
+                    <!-- Step 1: Personal Information -->
+                    <div class="form-step active" data-step="1">
+                        <div style="display: flex; justify-content: flex-start; margin-bottom: 15px;">
+                            <button type="button" onclick="resetFormData()" style="padding: 8px 16px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; color: #fff; cursor: pointer; font-size: 12px; transition: all 0.3s ease;" onmouseover="this.style.borderColor='rgba(255, 255, 255, 0.7)'; this.style.background='rgba(255, 255, 255, 0.15)'; this.style.boxShadow='0 0 15px rgba(255, 255, 255, 0.3)'" onmouseout="this.style.borderColor='rgba(255, 255, 255, 0.3)'; this.style.background='rgba(255, 255, 255, 0.1)'; this.style.boxShadow='none'">Reset Form</button>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required placeholder="Enter your full name" autocomplete="name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required placeholder="Enter your email" autocomplete="email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number *</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="Enter your phone number" autocomplete="tel">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Address *</label>
+                            <div class="input-with-icon">
+                                <textarea id="address" name="address" rows="3" required placeholder="Enter your full address" autocomplete="street-address" onblur="verifyLocation()"></textarea>
+                                <span id="locationStatus" class="location-status"></span>
+                            </div>
+                            <button type="button" class="location-btn" onclick="getLiveLocation()">
+                                <span class="location-icon">📍</span> Use Current Location
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="skipIdProof" onchange="toggleIdProofFields()">
+                                <span>Skip ID Proof for now (Provide at hotel check-in)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-row two-columns" id="idProofSection">
+                            <div class="form-group">
+                                <label for="idProofType">ID Proof Type</label>
+                                <select id="idProofType" name="idProofType">
+                                    <option value="">Select ID type</option>
+                                    <option value="aadhar">Aadhar Card</option>
+                                    <option value="pan">PAN Card</option>
+                                    <option value="passport">Passport</option>
+                                    <option value="driving">Driving License</option>
+                                    <option value="voter">Voter ID</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="idProofNumber">ID Proof Number</label>
+                                <input type="text" id="idProofNumber" name="idProofNumber" placeholder="Enter ID number">
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="idProofPrivacyNote">
+                            <p style="font-size: 12px; color: rgba(255, 255, 255, 0.6); margin: 5px 0;">
+                                🔒 Your ID proof data is stored securely in Firebase and only used for verification. We never share your personal information with third parties.
+                            </p>
+                        </div>
+
+                        <div class="form-row two-columns">
+                            <div class="form-group">
+                                <label for="vehicleNumber">Vehicle Number (Optional)</label>
+                                <input type="text" id="vehicleNumber" name="vehicleNumber" placeholder="e.g., MH 01 AB 1234">
+                            </div>
+                            <div class="form-group">
+                                <label for="emergencyContact">Emergency Contact Number *</label>
+                                <input type="tel" id="emergencyContact" name="emergencyContact" required placeholder="Emergency contact number" autocomplete="tel">
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="nav-btn next-btn" onclick="nextStep(1)">Next →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Room & Date Details -->
+                    <div class="form-step" data-step="2">
+                        <div class="form-group">
+                            <label for="roomType">Room Type *</label>
+                            <select id="roomType" name="roomType" required>
+                                <option value="">Select room type</option>
+                                <option value="ac">AC Room - ₹1,000/night</option>
+                                <option value="non-ac">Non-AC Room - ₹700/night</option>
+                                <option value="deluxe">Deluxe Room - ₹1,500/night</option>
+                                <option value="suite">Suite Room - ₹2,500/night</option>
+                                <option value="family">Family Room - ₹2,000/night</option>
+                                <option value="dormitory">Dormitory - ₹300/night</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row two-columns">
+                            <div class="form-group">
+                                <label for="checkIn">Check-in Date *</label>
+                                <input type="date" id="checkIn" name="checkIn" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkInTime">Check-in Time *</label>
+                                <input type="time" id="checkInTime" name="checkInTime" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkOut">Check-out Date *</label>
+                                <input type="date" id="checkOut" name="checkOut" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="checkOutTime">Check-out Time *</label>
+                                <input type="time" id="checkOutTime" name="checkOutTime" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="guests">Number of Guests *</label>
+                            <input type="number" id="guests" name="guests" required min="1" max="50" placeholder="Enter number of guests" onchange="updateGuestFields()">
+                        </div>
+
+                        <div class="form-row two-columns" id="guestGenderFields">
+                            <div class="form-group">
+                                <label for="maleGuests">Male Guests *</label>
+                                <input type="number" id="maleGuests" name="maleGuests" min="0" max="50" placeholder="Number of males" onchange="validateGuestCount()">
+                            </div>
+                            <div class="form-group">
+                                <label for="femaleGuests">Female Guests *</label>
+                                <input type="number" id="femaleGuests" name="femaleGuests" min="0" max="50" placeholder="Number of females" onchange="validateGuestCount()">
+                            </div>
+                            <p id="guestValidationMsg" style="font-size: 12px; color: rgba(255, 255, 255, 0.6); align-self: center; margin: 0;">Male + Female must equal Total Guests</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="specialRequests">Special Requests (Optional)</label>
+                            <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="Any special requests or requirements"></textarea>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="nav-btn back-btn" onclick="prevStep(2)">← Back</button>
+                            <button type="button" class="nav-btn next-btn" onclick="nextStep(2)">Next →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Payment -->
+                    <div class="form-step" data-step="3">
+                        <div class="booking-summary">
+                            <h3>Booking Summary</h3>
+                            <div class="summary-item">
+                                <span>Full Name:</span>
+                                <span id="summaryName">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Email:</span>
+                                <span id="summaryEmail">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Phone:</span>
+                                <span id="summaryPhone">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Room Type:</span>
+                                <span id="summaryRoom">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Check-in:</span>
+                                <span id="summaryCheckIn">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Check-out:</span>
+                                <span id="summaryCheckOut">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Nights:</span>
+                                <span id="summaryNights">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Price per Night:</span>
+                                <span id="summaryPrice">-</span>
+                            </div>
+                            <div class="summary-item">
+                                <span>Guests:</span>
+                                <span id="summaryGuests">-</span>
+                            </div>
+                            <div class="summary-item total">
+                                <span>Total Amount:</span>
+                                <span id="summaryTotal">₹0</span>
+                            </div>
+                        </div>
+
+                        <div class="payment-section">
+                            <h3>Payment Method</h3>
+                            <div class="payment-options">
+                                <label class="payment-option" onclick="selectPaymentMethod('card')">
+                                    <input type="radio" name="payment" value="card" required>
+                                    <span class="payment-icon">C</span>
+                                    <span class="payment-label">Credit Card</span>
+                                </label>
+                                <label class="payment-option" onclick="selectPaymentMethod('upi')">
+                                    <input type="radio" name="payment" value="upi">
+                                    <span class="payment-icon">U</span>
+                                    <span class="payment-label">UPI / GPay</span>
+                                </label>
+                                <label class="payment-option" onclick="selectPaymentMethod('cash')">
+                                    <input type="radio" name="payment" value="cash">
+                                    <span class="payment-icon">₹</span>
+                                    <span class="payment-label">Pay at Hotel</span>
+                                </label>
+                            </div>
+                            <div id="paymentActionButtons" style="display: none; margin-top: 20px;">
+                                <button type="button" class="edit-btn" onclick="processPayment()" style="width: 100%;">Proceed with Payment</button>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="nav-btn back-btn" onclick="prevStep(3)">← Back</button>
+                            <button type="button" class="nav-btn submit-btn" onclick="confirmBooking()">Confirm Booking</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="booking-info">
+                <h3>Booking Information</h3>
+                <div class="info-card">
+                    <h4>AC Rooms</h4>
+                    <p>₹1,000 per night</p>
+                    <ul>
+                        <li>Air-conditioned rooms</li>
+                        <li>24/7 hot water</li>
+                        <li>Free Wi-Fi</li>
+                        <li>TV with cable</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4>Non-AC Rooms</h4>
+                    <p>₹700 per night</p>
+                    <ul>
+                        <li>Well-ventilated rooms</li>
+                        <li>Ceiling fans</li>
+                        <li>Free Wi-Fi</li>
+                        <li>TV with cable</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4>Contact Information</h4>
+                    <p>☎️ <a href="tel:+918888338884">8888338884</a></p>
+                    <p>☎️ <a href="tel:+919767338884">9767338884</a></p>
+                    <p>☎️ <a href="tel:+919850338884">9850338884</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Payment Details Modal -->
+    <div id="paymentModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closePaymentModal()">&times;</span>
+            <h2>Payment Details</h2>
+            <div id="paymentDetails" style="text-align: center; padding: 20px;">
+                <p><strong>Total Amount:</strong> <span id="paymentAmount">₹0</span></p>
+                <p><strong>Pay to:</strong> Samarth Lodging</p>
+
+                <div style="margin: 20px 0;">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Select your preferred payment method</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                        <button class="edit-btn" onclick="showCreditCardForm()">Pay with Credit Card</button>
+                        <button class="edit-btn" onclick="showGPayQR()">Pay with GPay / UPI</button>
+                        <button class="edit-btn" onclick="confirmCashPayment()">Pay at Hotel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPay QR Code Modal -->
+    <div id="gpayModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <span class="close-modal" onclick="closeGPayModal()">&times;</span>
+            <h2>Pay with GPay / UPI</h2>
+            <p><strong>Total Amount:</strong> <span id="gpayAmount">₹0</span></p>
+            <div style="margin: 20px 0;">
+                <!-- QR Code Placeholder - Replace with actual QR code image -->
+                <div style="background: white; padding: 20px; border-radius: 10px; display: inline-block;">
+                    <img src="qr-code-placeholder.png" alt="UPI QR Code" style="width: 200px; height: 200px; object-fit: contain;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display: none; color: #333; padding: 20px;">
+                        <p>QR Code</p>
+                        <p style="font-size: 12px;">(Add your QR code image as qr-code-placeholder.png)</p>
+                    </div>
+                </div>
+            </div>
+            <p style="color: rgba(255,255,255,0.7); font-size: 14px;">Scan QR code with GPay, PhonePe, or any UPI app</p>
+            <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 10px;">Or click below to open GPay directly</p>
+            <button class="edit-btn" style="margin-top: 15px;" onclick="openGPayApp()">Open GPay App</button>
+
+            <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                <label for="transactionId" style="color: rgba(255,255,255,0.7); font-size: 14px; display: block; margin-bottom: 10px;">Enter Transaction ID / UTR Number *</label>
+                <input type="text" id="transactionId" placeholder="Enter your transaction ID" style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #fff; margin-bottom: 15px;">
+                <button class="edit-btn" onclick="confirmUPIPayment()">Confirm Payment</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Credit Card Payment Modal -->
+    <div id="creditCardModal" class="modal" style="display: none;">
+        <div class="modal-content credit-card-modal" style="max-width: 450px;">
+            <span class="close-modal" onclick="closeCreditCardModal()">&times;</span>
+            <h2>Credit Card Payment</h2>
+            <p><strong>Total Amount:</strong> <span id="creditCardAmount">₹0</span></p>
+
+            <form id="creditCardForm" class="credit-card-form">
+                <div class="form-group">
+                    <label for="cardName">Card Holder Name *</label>
+                    <input type="text" id="cardName" name="cardName" required placeholder="Name on card" autocomplete="cc-name">
+                </div>
+                <div class="form-group">
+                    <label for="cardNumber">Card Number *</label>
+                    <input type="text" id="cardNumber" name="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+                </div>
+                <div class="form-row two-columns">
+                    <div class="form-group">
+                        <label for="expiry">Expiry Date *</label>
+                        <input type="text" id="expiry" name="expiry" required placeholder="MM/YY" maxlength="5" autocomplete="cc-exp">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV *</label>
+                        <input type="text" id="cvv" name="cvv" required placeholder="123" maxlength="3" autocomplete="cc-csc">
+                    </div>
+                </div>
+                <button type="submit" class="purchase--btn">Pay ₹<span id="creditCardBtnAmount">0</span></button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content" style="text-align: center; max-width: 600px;">
+            <span class="close-modal" style="position: absolute; right: 20px; top: 20px;">&times;</span>
+            <h2 style="margin-bottom: 20px;">Booking Confirmed!</h2>
+            <div id="bookingDetails" style="margin: 20px 0;"></div>
+            <p style="margin: 20px 0;">Your booking has been successfully submitted. We will contact you shortly to confirm your reservation.</p>
+            <button class="modal-btn" onclick="closeModal()" style="margin-top: 20px;">Close</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <h3>Samarth Lodging</h3>
+                    <p>Smart Living, Warm Hospitality</p>
+                    <p>Your home away from home with comfortable rooms and excellent service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="main.html">About Us</a></li>
+                        <li><a href="rooms.html">Rooms</a></li>
+                        <li><a href="booking.html">Book Now</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="footer-contact">
+                        <p>📞 <a href="tel:+918888338884">8888338884</a></p>
+                        <p>📞 <a href="tel:+919767338884">9767338884</a></p>
+                        <p>📞 <a href="tel:+919850338884">9850338884</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Samarth Lodging. All rights reserved.</p>
+                <div class="parent">
+                    <div class="child child-1">
+                        <button class="button btn-1" onclick="window.open('https://twitter.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="#1e90ff"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-2">
+                        <button class="button btn-2" onclick="window.open('https://instagram.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#ff00ff"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-3">
+                        <button class="button btn-3" onclick="window.open('https://github.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-4">
+                        <button class="button btn-4" onclick="window.open('https://facebook.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#4267B2"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hide loader when page loads
+        window.addEventListener('load', function() {
+            const skeletonLoader = document.getElementById('skeletonLoader');
+            if (skeletonLoader) {
+                skeletonLoader.style.display = 'none';
+            }
+
+            // Initialize session timeout if logged in
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                sessionUtils.init(30 * 60 * 1000); // 30 minutes
+            }
+        });
+
+        // Multi-step form navigation
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function nextStep(step) {
+            // Validate current step before proceeding
+            if (!validateStep(step)) {
+                return;
+            }
+
+            // Hide current step
+            document.querySelector(`.form-step[data-step="${step}"]`).classList.remove('active');
+
+            // Show next step
+            const nextStepNum = step + 1;
+            document.querySelector(`.form-step[data-step="${nextStepNum}"]`).classList.add('active');
+
+            // Update progress indicators
+            document.querySelector(`.progress-step[data-step="${step}"]`).classList.remove('active');
+            document.querySelector(`.progress-step[data-step="${step}"]`).classList.add('completed');
+            document.querySelector(`.progress-step[data-step="${nextStepNum}"]`).classList.add('active');
+
+            currentStep = nextStepNum;
+
+            // Scroll to top of form
+            document.querySelector('.booking-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Update summary when reaching step 3
+            if (currentStep === 3) {
+                updateSummary();
+            }
+        }
+
+        function prevStep(step) {
+            // Hide current step
+            document.querySelector(`.form-step[data-step="${step}"]`).classList.remove('active');
+
+            // Show previous step
+            const prevStepNum = step - 1;
+            document.querySelector(`.form-step[data-step="${prevStepNum}"]`).classList.add('active');
+
+            // Update progress indicators
+            document.querySelector(`.progress-step[data-step="${step}"]`).classList.remove('active');
+            document.querySelector(`.progress-step[data-step="${prevStepNum}"]`).classList.remove('completed');
+            document.querySelector(`.progress-step[data-step="${prevStepNum}"]`).classList.add('active');
+
+            currentStep = prevStepNum;
+
+            // Scroll to top of form
+            document.querySelector('.booking-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function validateStep(step) {
+            let isValid = true;
+            let errorMessage = '';
+
+            if (step === 1) {
+                // Validate personal info with sanitization
+                const name = sanitizer.sanitize(document.getElementById('name').value.trim(), 'name');
+                const email = sanitizer.sanitize(document.getElementById('email').value.trim(), 'email');
+                const phone = sanitizer.sanitize(document.getElementById('phone').value.trim(), 'phone');
+                const address = sanitizer.sanitize(document.getElementById('address').value.trim(), 'address');
+                const emergencyContact = sanitizer.sanitize(document.getElementById('emergencyContact').value.trim(), 'phone');
+
+                if (!name) {
+                    errorMessage = 'Please enter your full name';
+                    isValid = false;
+                } else if (!email) {
+                    errorMessage = 'Please enter a valid email address';
+                    isValid = false;
+                } else if (!phone) {
+                    errorMessage = 'Please enter a valid phone number';
+                    isValid = false;
+                } else if (!address) {
+                    errorMessage = 'Please enter your address';
+                    isValid = false;
+                } else if (!emergencyContact) {
+                    errorMessage = 'Please enter a valid emergency contact number';
+                    isValid = false;
+                }
+            } else if (step === 2) {
+                // Validate room details
+                const roomType = document.getElementById('roomType').value;
+                const checkIn = document.getElementById('checkIn').value;
+                const checkInTime = document.getElementById('checkInTime').value;
+                const checkOut = document.getElementById('checkOut').value;
+                const checkOutTime = document.getElementById('checkOutTime').value;
+                const guests = document.getElementById('guests').value;
+                const maleGuests = document.getElementById('maleGuests').value || 0;
+                const femaleGuests = document.getElementById('femaleGuests').value || 0;
+
+                if (!roomType) {
+                    errorMessage = 'Please select a room type';
+                    isValid = false;
+                } else if (!checkIn) {
+                    errorMessage = 'Please select check-in date';
+                    isValid = false;
+                } else if (!checkInTime) {
+                    errorMessage = 'Please select check-in time';
+                    isValid = false;
+                } else if (!checkOut) {
+                    errorMessage = 'Please select check-out date';
+                    isValid = false;
+                } else if (!checkOutTime) {
+                    errorMessage = 'Please select check-out time';
+                    isValid = false;
+                } else if (!guests || guests < 1) {
+                    errorMessage = 'Please enter number of guests';
+                    isValid = false;
+                } else if (new Date(checkOut) <= new Date(checkIn)) {
+                    errorMessage = 'Check-out date must be after check-in date';
+                    isValid = false;
+                } else if (guests > 1) {
+                    const totalGender = parseInt(maleGuests) + parseInt(femaleGuests);
+                    if (totalGender !== parseInt(guests)) {
+                        errorMessage = `Male + Female guests (${totalGender}) must equal total guests (${guests})`;
+                        isValid = false;
+                    }
+                }
+            }
+
+            if (!isValid) {
+                alert(errorMessage);
+            }
+
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function updateSummary() {
+            // Update summary with form data
+            document.getElementById('summaryName').textContent = document.getElementById('name').value || '-';
+            document.getElementById('summaryEmail').textContent = document.getElementById('email').value || '-';
+            document.getElementById('summaryPhone').textContent = document.getElementById('phone').value || '-';
+
+            const roomType = document.getElementById('roomType').value;
+            const roomNames = {
+                'ac': 'AC Room',
+                'non-ac': 'Non-AC Room',
+                'deluxe': 'Deluxe Room',
+                'suite': 'Suite Room',
+                'family': 'Family Room',
+                'dormitory': 'Dormitory'
+            };
+            document.getElementById('summaryRoom').textContent = roomNames[roomType] || '-';
+
+            const checkIn = document.getElementById('checkIn').value;
+            const checkInTime = document.getElementById('checkInTime').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const checkOutTime = document.getElementById('checkOutTime').value;
+
+            document.getElementById('summaryCheckIn').textContent = checkIn && checkInTime ? `${checkIn} ${checkInTime}` : '-';
+            document.getElementById('summaryCheckOut').textContent = checkOut && checkOutTime ? `${checkOut} ${checkOutTime}` : '-';
+
+            // Calculate nights and total
+            if (checkIn && checkOut) {
+                const startDate = new Date(checkIn);
+                const endDate = new Date(checkOut);
+                const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+                document.getElementById('summaryNights').textContent = nights;
+
+                const prices = {
+                    'ac': 1000,
+                    'non-ac': 700,
+                    'deluxe': 1500,
+                    'suite': 2500,
+                    'family': 2000,
+                    'dormitory': 300
+                };
+                const pricePerNight = prices[roomType] || 0;
+                const total = nights * pricePerNight;
+
+                document.getElementById('summaryPrice').textContent = `₹${pricePerNight}`;
+                document.getElementById('summaryTotal').textContent = `₹${total}`;
+            }
+
+            document.getElementById('summaryGuests').textContent = document.getElementById('guests').value || '-';
+        }
+
+        function updateGuestFields() {
+            const guests = parseInt(document.getElementById('guests').value) || 0;
+            const guestGenderFields = document.getElementById('guestGenderFields');
+            const validationMsg = document.getElementById('guestValidationMsg');
+            const maleGuestsInput = document.getElementById('maleGuests');
+            const femaleGuestsInput = document.getElementById('femaleGuests');
+
+            // Always show gender fields regardless of guest count
+            guestGenderFields.style.display = 'flex';
+            validationMsg.style.display = 'block';
+
+            // If only 1 guest, clear the other field and set appropriate values
+            if (guests === 1) {
+                validationMsg.textContent = 'Select gender for the single guest';
+                validationMsg.style.color = 'rgba(255, 255, 255, 0.6)';
+                // Don't auto-clear values, let user choose
+            } else if (guests > 1) {
+                validationMsg.textContent = 'Male + Female must equal Total Guests';
+                validationMsg.style.color = 'rgba(255, 255, 255, 0.6)';
+                // Clear values if they exceed total guests
+                if (parseInt(maleGuestsInput.value) > guests) {
+                    maleGuestsInput.value = '';
+                }
+                if (parseInt(femaleGuestsInput.value) > guests) {
+                    femaleGuestsInput.value = '';
+                }
+            } else {
+                validationMsg.style.display = 'none';
+                maleGuestsInput.value = '';
+                femaleGuestsInput.value = '';
+            }
+        }
+
+        function validateGuestCount() {
+            const totalGuests = parseInt(document.getElementById('guests').value) || 0;
+            const maleGuests = parseInt(document.getElementById('maleGuests').value) || 0;
+            const femaleGuests = parseInt(document.getElementById('femaleGuests').value) || 0;
+            const validationMsg = document.getElementById('guestValidationMsg');
+
+            if (totalGuests === 1) {
+                // For single guest, allow either male=1 or female=1
+                if (maleGuests === 1 && femaleGuests === 0) {
+                    validationMsg.style.color = '#10b981';
+                    validationMsg.textContent = '✓ 1 Male guest';
+                } else if (maleGuests === 0 && femaleGuests === 1) {
+                    validationMsg.style.color = '#10b981';
+                    validationMsg.textContent = '✓ 1 Female guest';
+                } else {
+                    validationMsg.style.color = '#ef4444';
+                    validationMsg.textContent = 'Select either Male or Female (not both)';
+                }
+            } else if (totalGuests > 1) {
+                const totalGender = maleGuests + femaleGuests;
+                if (totalGender !== totalGuests) {
+                    validationMsg.style.color = '#ef4444';
+                    validationMsg.textContent = `Male + Female (${totalGender}) must equal Total Guests (${totalGuests})`;
+                } else {
+                    validationMsg.style.color = '#10b981';
+                    validationMsg.textContent = '✓ Guest count matches';
+                }
+            }
+        }
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Check login status and update navigation
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const loginLink = document.getElementById('loginLink');
+            const meLink = document.getElementById('meLink');
+            const loginReminder = document.getElementById('loginReminder');
+
+            if (isLoggedIn) {
+                if (loginLink) loginLink.style.display = 'none';
+                if (meLink) meLink.style.display = 'block';
+                if (loginReminder) loginReminder.style.display = 'none';
+
+                // Pre-fill form with logged-in user's data
+                const userEmail = sessionStorage.getItem('userEmail');
+                const userName = sessionStorage.getItem('userName');
+                const userPhone = sessionStorage.getItem('userPhone');
+                const userAddress = sessionStorage.getItem('userAddress');
+                if (userEmail) document.getElementById('email').value = userEmail;
+                if (userName) document.getElementById('name').value = userName;
+                if (userPhone) document.getElementById('phone').value = userPhone;
+                if (userAddress) document.getElementById('address').value = userAddress;
+            } else {
+                if (loginLink) loginLink.style.display = 'block';
+                if (meLink) meLink.style.display = 'none';
+                if (loginReminder) loginReminder.style.display = 'block';
+            }
+        }
+
+        // Mobile warning dismissal (no-op: mobile-warning element does not exist on this page)
+        function dismissWarning() {}
+
+        // Save form data to localStorage
+        function saveFormData() {
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                idProofType: document.getElementById('idProofType').value,
+                idProofNumber: document.getElementById('idProofNumber').value,
+                vehicleNumber: document.getElementById('vehicleNumber').value,
+                emergencyContact: document.getElementById('emergencyContact').value,
+                roomType: document.getElementById('roomType').value,
+                checkIn: document.getElementById('checkIn').value,
+                checkInTime: document.getElementById('checkInTime').value,
+                checkOut: document.getElementById('checkOut').value,
+                checkOutTime: document.getElementById('checkOutTime').value,
+                guests: document.getElementById('guests').value,
+                maleGuests: document.getElementById('maleGuests').value,
+                femaleGuests: document.getElementById('femaleGuests').value,
+                specialRequests: document.getElementById('specialRequests').value
+            };
+            localStorage.setItem('savedBookingFormData', JSON.stringify(formData));
+        }
+
+        // Restore form data from localStorage
+        function restoreFormData() {
+            const savedData = localStorage.getItem('savedBookingFormData');
+            if (savedData) {
+                const formData = JSON.parse(savedData);
+                if (formData.name) document.getElementById('name').value = formData.name;
+                if (formData.email) document.getElementById('email').value = formData.email;
+                if (formData.phone) document.getElementById('phone').value = formData.phone;
+                if (formData.address) document.getElementById('address').value = formData.address;
+                if (formData.idProofType) document.getElementById('idProofType').value = formData.idProofType;
+                if (formData.idProofNumber) document.getElementById('idProofNumber').value = formData.idProofNumber;
+                if (formData.vehicleNumber) document.getElementById('vehicleNumber').value = formData.vehicleNumber;
+                if (formData.emergencyContact) document.getElementById('emergencyContact').value = formData.emergencyContact;
+                if (formData.roomType) document.getElementById('roomType').value = formData.roomType;
+                if (formData.checkIn) document.getElementById('checkIn').value = formData.checkIn;
+                if (formData.checkInTime) document.getElementById('checkInTime').value = formData.checkInTime;
+                if (formData.checkOut) document.getElementById('checkOut').value = formData.checkOut;
+                if (formData.checkOutTime) document.getElementById('checkOutTime').value = formData.checkOutTime;
+                if (formData.guests) document.getElementById('guests').value = formData.guests;
+                if (formData.maleGuests) document.getElementById('maleGuests').value = formData.maleGuests;
+                if (formData.femaleGuests) document.getElementById('femaleGuests').value = formData.femaleGuests;
+                if (formData.specialRequests) document.getElementById('specialRequests').value = formData.specialRequests;
+                localStorage.removeItem('savedBookingFormData');
+            }
+        }
+
+        // Reset form data
+        function resetFormData() {
+            document.getElementById('bookingForm').reset();
+            document.getElementById('skipIdProof').checked = false;
+            toggleIdProofFields();
+            updateGuestFields();
+            localStorage.removeItem('savedBookingFormData');
+        }
+
+        function closeLoginReminder() {
+            document.getElementById('loginReminder').style.display = 'none';
+        }
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('checkIn').setAttribute('min', today);
+        document.getElementById('checkOut').setAttribute('min', today);
+
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Firebase first
+            initFirebase();
+
+            // Then check login status
+            checkLoginStatus();
+
+            // Restore saved form data if user just logged in
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                restoreFormData();
+            }
+
+            // Initialize guest fields
+            updateGuestFields();
+
+            // Mouse movement for info cards
+            const infoCards = document.querySelectorAll('.info-card');
+            infoCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+            // Mouse movement for booking form
+            if (bookingForm) {
+                bookingForm.addEventListener('mousemove', (e) => {
+                    const rect = bookingForm.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    bookingForm.style.setProperty('--mouse-x', `${x}px`);
+                    bookingForm.style.setProperty('--mouse-y', `${y}px`);
+                });
+            }
+
+            // Mouse movement for booking summary
+            const bookingSummary = document.querySelector('.booking-summary');
+            if (bookingSummary) {
+                bookingSummary.addEventListener('mousemove', (e) => {
+                    const rect = bookingSummary.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    bookingSummary.style.setProperty('--mouse-x', `${x}px`);
+                    bookingSummary.style.setProperty('--mouse-y', `${y}px`);
+                });
+            }
+        });
+
+
+        // Payment method selection function
+        function selectPaymentMethod(method) {
+            // Check the radio button
+            const radio = document.querySelector(`input[value="${method}"]`);
+            radio.checked = true;
+
+            // Remove active class from all options
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            paymentOptions.forEach(opt => opt.style.background = 'rgba(255, 255, 255, 0.05)');
+            // Add active class to clicked option
+            const selectedOption = document.querySelector(`input[value="${method}"]`).parentElement;
+            selectedOption.style.background = 'rgba(102, 126, 234, 0.3)';
+
+            // Show payment action button
+            document.getElementById('paymentActionButtons').style.display = 'block';
+            
+            // Store selected payment method
+            currentBookingData.selectedPayment = method;
+        }
+
+        // Process payment based on selected method
+        function processPayment() {
+            const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+            
+            if (!selectedPayment) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            // Process based on payment method
+            if (selectedPayment === 'card') {
+                showCreditCardForm();
+            } else if (selectedPayment === 'upi') {
+                showGPayQR();
+            } else if (selectedPayment === 'cash') {
+                confirmCashPayment();
+            }
+        }
+
+        // Confirm booking function
+        function confirmBooking() {
+            const selectedPayment = document.querySelector('input[name="payment"]:checked');
+            
+            if (!selectedPayment) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            // Validate form and proceed with booking
+            const form = document.getElementById('bookingForm');
+            if (validateStep(3)) {
+                // Store booking data
+                const formData = new FormData(form);
+                currentBookingData = {
+                    name: sanitizer.sanitize(formData.get('name'), 'name'),
+                    email: sanitizer.sanitize(formData.get('email'), 'email'),
+                    phone: sanitizer.sanitize(formData.get('phone'), 'phone'),
+                    address: sanitizer.sanitize(formData.get('address'), 'address'),
+                    idProofType: sanitizer.sanitize(formData.get('idProofType'), 'text'),
+                    idProofNumber: sanitizer.sanitize(formData.get('idProofNumber'), 'id'),
+                    vehicleNumber: sanitizer.sanitize(formData.get('vehicleNumber'), 'vehicle'),
+                    emergencyContact: sanitizer.sanitize(formData.get('emergencyContact'), 'phone'),
+                    roomType: formData.get('roomType'),
+                    checkIn: formData.get('checkIn'),
+                    checkInTime: formData.get('checkInTime'),
+                    checkOut: formData.get('checkOut'),
+                    checkOutTime: formData.get('checkOutTime'),
+                    guests: formData.get('guests'),
+                    maleGuests: formData.get('maleGuests') || 0,
+                    femaleGuests: formData.get('femaleGuests') || 0,
+                    specialRequests: sanitizer.sanitize(formData.get('specialRequests'), 'text'),
+                    selectedPayment: selectedPayment.value
+                };
+
+                // Calculate nights and total
+                const startDate = new Date(currentBookingData.checkIn);
+                const endDate = new Date(currentBookingData.checkOut);
+                currentBookingData.nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+                
+                const prices = {
+                    'ac': 1000,
+                    'non-ac': 700,
+                    'deluxe': 1500,
+                    'suite': 2500,
+                    'family': 2000,
+                    'dormitory': 300
+                };
+                currentBookingData.total = currentBookingData.nights * (prices[currentBookingData.roomType] || 0);
+
+                // Show payment modal
+                openPaymentModal(currentBookingData.total);
+            }
+        }
+
+        // Payment Modal Functions
+        let currentBookingData = {};
+        let stripe;
+        let db;
+
+        // Initialize Firebase
+        function initFirebase() {
+            // Firebase config
+            const firebaseConfig = {
+                apiKey: "AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",
+                authDomain: "samrtha-lodging.firebaseapp.com",
+                databaseURL: "https://samrtha-lodging-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "samrtha-lodging",
+                storageBucket: "samrtha-lodging.firebasestorage.app",
+                messagingSenderId: "254916752014",
+                appId: "1:254916752014:web:2bfa52b2f81c70ece78fdf"
+            };
+
+            try {
+                if (!firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                    console.log('Firebase initialized successfully');
+                } else {
+                    console.log('Firebase already initialized');
+                }
+                db = firebase.database();
+            } catch (error) {
+                errorHandler.log(error, 'Firebase initialization', {}, 'error');
+            }
+
+            // Clear any old Firebase auth data from previous LOCAL persistence
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('firebase:auth:')) {
+                    localStorage.removeItem(key);
+                }
+            });
+        }
+
+        function openPaymentModal(total) {
+            document.getElementById('paymentAmount').textContent = `₹${total}`;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function getRoomTypeName(roomType) {
+            const roomNames = {
+                'ac': 'AC Room',
+                'non-ac': 'Non-AC Room',
+                'deluxe': 'Deluxe Room',
+                'suite': 'Suite Room',
+                'family': 'Family Room',
+                'dormitory': 'Dormitory'
+            };
+            return roomNames[roomType] || roomType;
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        // GPay Modal Functions
+        function showGPayQR() {
+            closePaymentModal();
+            document.getElementById('gpayAmount').textContent = document.getElementById('paymentAmount').textContent;
+            document.getElementById('gpayModal').style.display = 'flex';
+        }
+
+        function closeGPayModal() {
+            document.getElementById('gpayModal').style.display = 'none';
+        }
+
+        function openGPayApp() {
+            // UPI ID for GPay
+            const upiId = 'samarthgole89-2@okicici'; // UPI ID
+            const amount = currentBookingData.total;
+            const name = encodeURIComponent('Samarth Lodging');
+            const note = encodeURIComponent('Room Booking Payment');
+
+            // Create UPI payment link
+            const upiLink = `upi://pay?pa=${upiId}&pn=${name}&am=${amount}&tn=${note}&cu=INR`;
+
+            // Try to open GPay app
+            window.location.href = upiLink;
+
+            // Fallback: Show alert if app doesn't open
+            setTimeout(() => {
+                alert('If GPay did not open, please scan the QR code manually.');
+            }, 2000);
+        }
+
+        function confirmUPIPayment() {
+            const transactionId = document.getElementById('transactionId').value.trim();
+
+            if (!transactionId || transactionId.length < 5) {
+                alert('Please enter a valid Transaction ID / UTR Number');
+                document.getElementById('transactionId').focus();
+                return;
+            }
+
+            // Save transaction ID and complete booking
+            completeBooking(
+                currentBookingData.name,
+                currentBookingData.email,
+                currentBookingData.phone,
+                currentBookingData.address,
+                currentBookingData.idProofType,
+                currentBookingData.idProofNumber,
+                currentBookingData.vehicleNumber,
+                currentBookingData.emergencyContact,
+                currentBookingData.roomType,
+                currentBookingData.checkIn,
+                currentBookingData.checkInTime,
+                currentBookingData.checkOut,
+                currentBookingData.checkOutTime,
+                currentBookingData.nights,
+                currentBookingData.total,
+                currentBookingData.guests,
+                currentBookingData.maleGuests,
+                currentBookingData.femaleGuests,
+                currentBookingData.specialRequests,
+                'UPI / GPay',
+                'confirmed',
+                transactionId
+            );
+
+            closeGPayModal();
+            document.getElementById('transactionId').value = '';
+        }
+
+        // Credit Card Modal Functions
+        function showCreditCardForm() {
+            closePaymentModal();
+            document.getElementById('creditCardAmount').textContent = document.getElementById('paymentAmount').textContent;
+            document.getElementById('creditCardBtnAmount').textContent = currentBookingData.total;
+            document.getElementById('creditCardModal').style.display = 'flex';
+
+            // Initialize Stripe Elements
+            if (!cardElement) {
+                initStripe();
+            }
+        }
+
+        function closeCreditCardModal() {
+            document.getElementById('creditCardModal').style.display = 'none';
+        }
+
+        // Initialize Stripe
+        let cardElement;
+
+        function initStripe() {
+            // Replace with your Stripe publishable key
+            stripe = Stripe('pk_test_YOUR_STRIPE_PUBLISHABLE_KEY');
+
+            // Create Stripe Elements
+            const elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#32325d',
+                        fontFamily: 'Arial, sans-serif',
+                        '::placeholder': {
+                            color: '#aab7c4',
+                        },
+                    },
+                },
+            });
+
+            cardElement.mount('#card-element');
+        }
+
+        document.getElementById('creditCardForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const cardName = document.getElementById('cardName').value;
+            const cardNumber = document.getElementById('cardNumber').value;
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+
+            if (!cardName || cardName.trim().length < 2) {
+                alert('Please enter a valid card holder name');
+                document.getElementById('cardName').focus();
+                return;
+            }
+
+            if (!cardNumber || cardNumber.length < 16) {
+                alert('Please enter a valid card number');
+                document.getElementById('cardNumber').focus();
+                return;
+            }
+
+            if (!expiry || expiry.length < 5) {
+                alert('Please enter a valid expiry date (MM/YY)');
+                document.getElementById('expiry').focus();
+                return;
+            }
+
+            if (!cvv || cvv.length < 3) {
+                alert('Please enter a valid CVV');
+                document.getElementById('cvv').focus();
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Processing...';
+            submitBtn.disabled = true;
+
+            completeBooking(
+                currentBookingData.name,
+                currentBookingData.email,
+                currentBookingData.phone,
+                currentBookingData.address,
+                currentBookingData.idProofType,
+                currentBookingData.idProofNumber,
+                currentBookingData.vehicleNumber,
+                currentBookingData.emergencyContact,
+                currentBookingData.roomType,
+                currentBookingData.checkIn,
+                currentBookingData.checkInTime,
+                currentBookingData.checkOut,
+                currentBookingData.checkOutTime,
+                currentBookingData.nights,
+                currentBookingData.total,
+                currentBookingData.guests,
+                currentBookingData.maleGuests,
+                currentBookingData.femaleGuests,
+                currentBookingData.specialRequests,
+                'Credit Card',
+                'Paid (Demo)',
+                'demo_payment_' + Date.now()
+            );
+
+            closeCreditCardModal();
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            this.reset();
+        });
+
+        // Stripe Payment Integration
+        async function initiateStripePayment(method) {
+            if (!stripe) {
+                initStripe();
+            }
+
+            const amount = document.getElementById('paymentAmount').textContent.replace('₹', '');
+            const amountInCents = Math.round(amount * 100); // Stripe uses cents
+
+            try {
+                // Create a payment intent on your server
+                // For now, we'll use a client-only approach with test mode
+                // In production, you need a backend to create payment intents
+                
+                if (method === 'card') {
+                    // For card payments, redirect to Stripe Checkout
+                    const { error, paymentIntent } = await stripe.confirmCardPayment(
+                        'YOUR_CLIENT_SECRET_FROM_BACKEND', // This should come from your backend
+                        {
+                            payment_method: {
+                                card: elements.create('card'),
+                                billing_details: {
+                                    name: currentBookingData.name,
+                                    email: currentBookingData.email,
+                                    phone: currentBookingData.phone
+                                }
+                            }
+                        }
+                    );
+
+                    if (error) {
+                        alert('Payment failed: ' + error.message);
+                    } else {
+                        closePaymentModal();
+                        completeBooking(
+                            currentBookingData.name,
+                            currentBookingData.email,
+                            currentBookingData.phone,
+                            currentBookingData.roomType,
+                            currentBookingData.checkIn,
+                            currentBookingData.checkInTime,
+                            currentBookingData.checkOut,
+                            currentBookingData.checkOutTime,
+                            currentBookingData.nights,
+                            currentBookingData.total,
+                            currentBookingData.guests,
+                            currentBookingData.specialRequests,
+                            currentBookingData.selectedPayment,
+                            'Paid',
+                            paymentIntent.id
+                        );
+                    }
+                } else if (method === 'upi') {
+                    // Stripe doesn't directly support UPI in India
+                    // Redirect to existing UPI-based payment
+                    alert('UPI payments are handled via direct UPI apps. Please use the existing UPI payment flow.');
+                }
+            } catch (error) {
+                errorHandler.log(error, 'Payment processing', { method, amount: total }, 'error');
+                errorHandler.showUserMessage('Payment failed. Please try again or contact support.', error);
+            }
+        }
+
+        // For development/testing without backend
+        function initiateTestPayment(method) {
+            closePaymentModal();
+            completeBooking(
+                currentBookingData.name,
+                currentBookingData.email,
+                currentBookingData.phone,
+                currentBookingData.address,
+                currentBookingData.idProofType,
+                currentBookingData.idProofNumber,
+                currentBookingData.vehicleNumber,
+                currentBookingData.emergencyContact,
+                currentBookingData.roomType,
+                currentBookingData.checkIn,
+                currentBookingData.checkInTime,
+                currentBookingData.checkOut,
+                currentBookingData.checkOutTime,
+                currentBookingData.nights,
+                currentBookingData.total,
+                currentBookingData.guests,
+                currentBookingData.maleGuests,
+                currentBookingData.femaleGuests,
+                currentBookingData.specialRequests,
+                currentBookingData.selectedPayment,
+                'Paid (Test)',
+                'test_payment_id'
+            );
+        }
+
+        function confirmCashPayment() {
+            closePaymentModal();
+            completeBooking(
+                currentBookingData.name,
+                currentBookingData.email,
+                currentBookingData.phone,
+                currentBookingData.address,
+                currentBookingData.idProofType,
+                currentBookingData.idProofNumber,
+                currentBookingData.vehicleNumber,
+                currentBookingData.emergencyContact,
+                currentBookingData.roomType,
+                currentBookingData.checkIn,
+                currentBookingData.checkInTime,
+                currentBookingData.checkOut,
+                currentBookingData.checkOutTime,
+                currentBookingData.nights,
+                currentBookingData.total,
+                currentBookingData.guests,
+                currentBookingData.maleGuests,
+                currentBookingData.femaleGuests,
+                currentBookingData.specialRequests,
+                currentBookingData.selectedPayment,
+                'Pay at Hotel',
+                null
+            );
+        }
+
+// Complete booking function
+        function completeBooking(name, email, phone, address, idProofType, idProofNumber, vehicleNumber, emergencyContact, roomType, checkIn, checkInTime, checkOut, checkOutTime, nights, total, guests, maleGuests, femaleGuests, specialRequests, selectedPayment, paymentStatus, paymentId = null) {
+            // Sanitize all booking data
+            const sanitizedData = {
+                name: sanitizer.sanitize(name, 'name'),
+                email: sanitizer.sanitize(email, 'email'),
+                phone: sanitizer.sanitize(phone, 'phone'),
+                address: sanitizer.sanitize(address, 'address'),
+                idProofType: sanitizer.sanitize(idProofType, 'text'),
+                idProofNumber: sanitizer.sanitize(idProofNumber, 'id'),
+                vehicleNumber: sanitizer.sanitize(vehicleNumber, 'vehicle'),
+                emergencyContact: sanitizer.sanitize(emergencyContact, 'phone'),
+                roomType: sanitizer.sanitize(roomType, 'text'),
+                checkIn: sanitizer.sanitize(checkIn, 'text'),
+                checkInTime: sanitizer.sanitize(checkInTime, 'text'),
+                checkOut: sanitizer.sanitize(checkOut, 'text'),
+                checkOutTime: sanitizer.sanitize(checkOutTime, 'text'),
+                specialRequests: sanitizer.sanitize(specialRequests, 'text')
+            };
+
+            // Save booking to sessionStorage
+            const booking = {
+                ...sanitizedData,
+                nights,
+                total,
+                status: 'Confirmed',
+                paymentMethod: sanitizer.sanitize(selectedPayment, 'text'),
+                paymentStatus: sanitizer.sanitize(paymentStatus, 'text'),
+                paymentId: paymentId,
+                guests,
+                bookingDate: new Date().toISOString()
+            };
+
+            // Save to sessionStorage
+            const bookings = JSON.parse(sessionStorage.getItem('bookings') || '[]');
+            bookings.push(booking);
+            sessionStorage.setItem('bookings', JSON.stringify(bookings));
+
+            // Clear saved form data after successful booking
+            localStorage.removeItem('savedBookingFormData');
+
+    // Save to Firebase Realtime Database
+    if (db) {
+        // Use name + timestamp as key for better readability
+        const bookingKey = name.replace(/\s+/g, '_') + '_' + Date.now();
+        const newBookingRef = db.ref('bookings').child(bookingKey);
+        console.log('Saving to Firebase - Name:', name);
+        console.log('Saving to Firebase - Email:', email);
+        newBookingRef.set({
+            name: sanitizedData.name,
+            email: sanitizedData.email,
+            phone: sanitizedData.phone,
+            address: sanitizedData.address,
+            idProofType: sanitizedData.idProofType,
+            idProofNumber: sanitizedData.idProofNumber,
+            vehicleNumber: sanitizedData.vehicleNumber,
+            emergencyContact: sanitizedData.emergencyContact,
+            roomType: getRoomTypeName(sanitizedData.roomType),
+            checkIn: sanitizedData.checkIn,
+            checkInTime: sanitizedData.checkInTime,
+            checkOut: sanitizedData.checkOut,
+            checkOutTime: sanitizedData.checkOutTime,
+            guests: guests,
+            maleGuests: maleGuests || 0,
+            femaleGuests: femaleGuests || 0,
+            nights: nights,
+            total: total,
+            totalAmount: total,
+            paymentMethod: selectedPayment,
+            paymentId: paymentId,
+            status: 'Confirmed',
+            timestamp: Date.now()
+        })
+        .then(() => {
+            console.log('Booking saved to Firebase with ID:', bookingKey);
+        })
+        .catch((error) => {
+            errorHandler.log(error, 'Firebase booking save', { bookingId: bookingKey }, 'error');
+        });
+    } else {
+        console.log('Firebase not initialized, saving to sessionStorage only');
+    }
+
+            const bookingDetails = `
+                <div class="booking-confirmation-details">
+                    <p><strong>Name:</strong> ${name}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <p><strong>Room Type:</strong> ${getRoomTypeName(roomType)}</p>
+                    <p><strong>Check-in:</strong> ${checkIn} at ${checkInTime}</p>
+                    <p><strong>Check-out:</strong> ${checkOut} at ${checkOutTime}</p>
+                    <p><strong>Nights:</strong> ${nights}</p>
+                    <p><strong>Guests:</strong> ${guests}</p>
+                    <p><strong>Total Amount:</strong> ₹${total}</p>
+                    ${specialRequests ? `<p><strong>Special Requests:</strong> ${specialRequests}</p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('bookingDetails').innerHTML = bookingDetails;
+            document.getElementById('bookingModal').style.display = 'flex';
+
+            // Play booking confirmation sound
+            playConfirmationSound();
+
+            // Store booking data
+            const bookingData = {
+                name, email, phone, roomType, checkIn, checkOut, guests, specialRequests, total, nights
+            };
+            sessionStorage.setItem('lastBooking', JSON.stringify(bookingData));
+
+            // Send confirmation email
+            sendBookingEmail(name, email, phone, address, idProofType, idProofNumber, vehicleNumber, emergencyContact, roomType, checkIn, checkInTime, checkOut, checkOutTime, guests, maleGuests, femaleGuests, specialRequests, total);
+        }
+
+        // Play booking confirmation sound
+        function playConfirmationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                // Create a pleasant chord (C major)
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (error) {
+                errorHandler.log(error, 'Booking confirmation sound', {}, 'warning');
+            }
+        }
+
+        // Send booking confirmation email via EmailJS
+        async function sendBookingEmail(name, email, phone, address, idProofType, idProofNumber, vehicleNumber, emergencyContact, roomType, checkIn, checkInTime, checkOut, checkOutTime, guests, maleGuests, femaleGuests, specialRequests, total) {
+            try {
+                // EmailJS - works on Vercel (client-side, no backend needed)
+                // Setup: https://emailjs.com → create account → add Gmail service → create template
+                const SERVICE_ID  = 'service_samarth';   // replace with your EmailJS service ID
+                const TEMPLATE_ID = 'template_booking';  // replace with your EmailJS template ID
+                const PUBLIC_KEY  = 'YOUR_EMAILJS_PUBLIC_KEY'; // replace with your EmailJS public key
+
+                emailjs.init(PUBLIC_KEY);
+
+                const roomName = getRoomTypeName(roomType);
+                const templateParams = {
+                    to_email:          email,
+                    to_name:           name,
+                    phone:             phone,
+                    address:           address || 'Not provided',
+                    id_proof_type:     idProofType || 'Not provided',
+                    id_proof_number:   idProofNumber || 'Not provided',
+                    vehicle_number:    vehicleNumber || 'Not provided',
+                    emergency_contact: emergencyContact,
+                    room_type:         roomName,
+                    check_in:          checkIn + ' at ' + checkInTime,
+                    check_out:         checkOut + ' at ' + checkOutTime,
+                    guests:            guests,
+                    special_requests:  specialRequests || 'None',
+                    total_amount:      '₹' + total,
+                    booking_date:      new Date().toLocaleDateString('en-IN')
+                };
+
+                await emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams);
+                console.log('Booking confirmation email sent via EmailJS');
+            } catch (error) {
+                console.error('EmailJS error:', error);
+                // Don't show error to user - booking itself succeeded
+            }
+        }
+
+        // Show/hide gender fields based on guest count
+        async function verifyLocation() {
+            const address = document.getElementById('address').value.trim();
+            const locationStatus = document.getElementById('locationStatus');
+
+            if (!address) {
+                locationStatus.className = 'location-status invalid';
+                return;
+            }
+
+            // Location verification disabled - just check if address is not empty
+            if (address.length > 5) {
+                locationStatus.className = 'location-status valid';
+            } else {
+                locationStatus.className = 'location-status invalid';
+            }
+        }
+
+        // Get live location using browser geolocation
+        function getLiveLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+
+                    // Reverse geocoding using OpenStreetMap Nominatim (free)
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`, {
+                            headers: {
+                                'User-Agent': 'SamarthLodging/1.0'
+                            }
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Geocoding API error');
+                        }
+
+                        const data = await response.json();
+                        if (data.display_name) {
+                            document.getElementById('address').value = data.display_name;
+                            document.getElementById('locationStatus').className = 'location-status valid';
+                        }
+                    } catch (error) {
+                        errorHandler.log(error, 'Geolocation API', { lat, lng }, 'error');
+                        errorHandler.showUserMessage('Unable to get location. Please enter address manually.', error);
+                    }
+                },
+                (error) => {
+                    errorHandler.log(error, 'Geolocation permission', { code: error.code }, 'error');
+                    let errorMessage = 'Unable to get location. ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage += 'Permission denied. Please allow location access in your browser settings.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage += 'Location information is unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage += 'Location request timed out.';
+                            break;
+                        default:
+                            errorMessage += 'An unknown error occurred.';
+                    }
+                    errorHandler.showUserMessage(errorMessage, error);
+                    alert(errorMessage);
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // Toggle ID proof fields based on skip checkbox
+        function toggleIdProofFields() {
+            const skipIdProof = document.getElementById('skipIdProof').checked;
+            const idProofSection = document.getElementById('idProofSection');
+            const idProofPrivacyNote = document.getElementById('idProofPrivacyNote');
+            const idProofType = document.getElementById('idProofType');
+            const idProofNumber = document.getElementById('idProofNumber');
+
+            if (skipIdProof) {
+                idProofSection.style.display = 'none';
+                idProofPrivacyNote.style.display = 'none';
+                idProofType.value = '';
+                idProofNumber.value = '';
+                idProofType.removeAttribute('required');
+                idProofNumber.removeAttribute('required');
+            } else {
+                idProofSection.style.display = 'grid';
+                idProofPrivacyNote.style.display = 'block';
+            }
+        }
+
+        // Booking form handling
+        const bookingForm = document.getElementById('bookingForm');
+        const roomTypeSelect = document.getElementById('roomType');
+        const checkInInput = document.getElementById('checkIn');
+        const checkOutInput = document.getElementById('checkOut');
+
+        const prices = {
+            'ac': 1000,
+            'non-ac': 700,
+            'deluxe': 1500,
+            'suite': 2500,
+            'family': 2000,
+            'dormitory': 300
+        };
+
+        function calculateTotal() {
+            const roomType = roomTypeSelect.value;
+            const checkIn = new Date(checkInInput.value);
+            const checkOut = new Date(checkOutInput.value);
+
+            if (roomType && checkInInput.value && checkOutInput.value && checkOut > checkIn) {
+                const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                const pricePerNight = prices[roomType];
+                const total = nights * pricePerNight;
+
+                const roomNames = {
+                    'ac': 'AC Room',
+                    'non-ac': 'Non-AC Room',
+                    'deluxe': 'Deluxe Room',
+                    'suite': 'Suite Room',
+                    'family': 'Family Room',
+                    'dormitory': 'Dormitory'
+                };
+
+                document.getElementById('summaryRoom').textContent = roomNames[roomType] || roomType;
+                document.getElementById('summaryNights').textContent = nights;
+                document.getElementById('summaryPrice').textContent = `₹${pricePerNight}`;
+                document.getElementById('summaryTotal').textContent = `₹${total}`;
+            } else {
+                document.getElementById('summaryRoom').textContent = '-';
+                document.getElementById('summaryNights').textContent = '-';
+                document.getElementById('summaryPrice').textContent = '-';
+                document.getElementById('summaryTotal').textContent = '-';
+            }
+        }
+
+        roomTypeSelect.addEventListener('change', calculateTotal);
+        checkInInput.addEventListener('change', calculateTotal);
+        checkOutInput.addEventListener('change', calculateTotal);
+
+        // Check URL parameters for pre-filled room type
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomParam = urlParams.get('room');
+        if (roomParam) {
+            roomTypeSelect.value = roomParam;
+            calculateTotal();
+        }
+
+        bookingForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Validate step 3 (payment method)
+            const paymentMethod = document.querySelector('input[name="payment"]:checked');
+            if (!paymentMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            if (!isLoggedIn) {
+                saveFormData();
+                alert('Please log in first to complete your booking. Your form data will be saved.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const idProofType = document.getElementById('idProofType').value;
+            const idProofNumber = document.getElementById('idProofNumber').value;
+            const vehicleNumber = document.getElementById('vehicleNumber').value || '';
+            const emergencyContact = document.getElementById('emergencyContact').value;
+            const roomType = document.getElementById('roomType').value;
+            const checkIn = document.getElementById('checkIn').value;
+            const checkInTime = document.getElementById('checkInTime').value;
+            const checkOut = document.getElementById('checkOut').value;
+            const checkOutTime = document.getElementById('checkOutTime').value;
+            const guests = document.getElementById('guests').value;
+            const maleGuests = document.getElementById('maleGuests').value || 0;
+            const femaleGuests = document.getElementById('femaleGuests').value || 0;
+            const specialRequests = document.getElementById('specialRequests').value;
+
+            // Validate guest count
+            if (guests < 1) {
+                alert('Please enter at least 1 guest');
+                document.getElementById('guests').focus();
+                return;
+            }
+
+            // Validate male + female guests equals total guests
+            if (guests > 1) {
+                const totalGenderGuests = parseInt(maleGuests) + parseInt(femaleGuests);
+                if (totalGenderGuests !== parseInt(guests)) {
+                    alert(`Male + Female guests (${totalGenderGuests}) must equal total guests (${guests})`);
+                    document.getElementById('maleGuests').focus();
+                    return;
+                }
+            }
+
+            const checkInDate = new Date(checkIn);
+            const checkOutDate = new Date(checkOut);
+            const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            
+            const prices = {
+                'ac': 1000,
+                'non-ac': 700,
+                'deluxe': 1500,
+                'suite': 2500,
+                'family': 2000,
+                'dormitory': 300
+            };
+            const total = nights * prices[roomType];
+
+            // Store booking data for payment modal
+            currentBookingData = {
+                name, email, phone, address, idProofType, idProofNumber, vehicleNumber, emergencyContact, roomType, checkIn, checkInTime, checkOut, checkOutTime, nights, total, guests, maleGuests, femaleGuests, specialRequests, selectedPayment: paymentMethod.value
+            };
+
+            // Show payment modal
+            openPaymentModal(total);
+        });
+
+        // Modal handling
+        const modal = document.getElementById('bookingModal');
+        const closeModalBtn = document.querySelector('.close-modal');
+
+        function closeModal() {
+            modal.style.display = 'none';
+            bookingForm.reset();
+            calculateTotal();
+            resetFormSteps();
+        }
+
+        function resetFormSteps() {
+            // Reset to step 1
+            currentStep = 1;
+            
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show step 1
+            document.querySelector('.form-step[data-step="1"]').classList.add('active');
+            
+            // Reset progress indicators
+            document.querySelectorAll('.progress-step').forEach(step => {
+                step.classList.remove('active', 'completed');
+            });
+            document.querySelector('.progress-step[data-step="1"]').classList.add('active');
+            
+            // Reset guest fields
+            updateGuestFields();
+            
+            // Scroll to top
+            document.querySelector('.booking-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

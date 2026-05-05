@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Lodging Rooms | Samarth Lodging - AC & Non-AC Options</title>
+    <meta name="description" content="Choose from our budget lodging rooms - AC and Non-AC options. Affordable rates, comfortable stays, easy booking. Perfect for budget lodging near me.">
+    <meta name="keywords" content="budget lodging near me, budget rooms, AC rooms, non-AC rooms, affordable lodging, guest house rooms">
+    <meta name="author" content="Samarth Lodging">
+    <meta name="robots" content="index, follow">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B80797PB0F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-B80797PB0F');
+    </script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script>
+var firebaseConfig = {
+    apiKey: "AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",
+    authDomain: "samrtha-lodging.firebaseapp.com",
+    projectId: "samrtha-lodging",
+    appId: "1:254916752014:web:2bfa52b2f81c70ece78fdf"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+var publicPages = ['login.html', 'index.html', 'rooms.html', 'main.html'];
+var currentPage = window.location.pathname.split('/').pop() || 'rooms.html';
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('userEmail', user.email || '');
+    sessionStorage.setItem('userName', user.displayName || (user.email ? user.email.split('@')[0] : ''));
+    sessionStorage.setItem('userId', user.uid || '');
+    
+    localStorage.setItem('userEmail', user.email || '');
+    localStorage.setItem('userName', user.displayName || (user.email ? user.email.split('@')[0] : ''));
+    localStorage.setItem('userId', user.uid || '');
+    if (typeof checkLoginStatus === 'function') checkLoginStatus();
+  } else {
+    if (!publicPages.includes(currentPage)) {
+      window.location.href = 'login.html';
+    }
+  }
+});
+</script>
+</head>
+<body>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" id="skeletonLoader">
+        <div class="skeleton-header">
+            <div class="skeleton-logo"></div>
+            <div class="skeleton-title">
+                <div class="skeleton-title-line"></div>
+                <div class="skeleton-title-line short"></div>
+            </div>
+        </div>
+        <div class="skeleton-content">
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.jpg" alt="Samarth Lodging Logo">
+                <span>Samarth Lodging</span>
+            </div>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="main.html" class="nav-link">About Us</a>
+                <a href="rooms.html" class="nav-link active">Rooms</a>
+                <a href="booking.html" class="nav-link">Book Now</a>
+                <a href="login.html" class="nav-link" id="loginLink">Login</a>
+                <a href="profile.html" class="nav-link" id="meLink" style="display: none;">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div style="padding: 20px;">
+        <a href="index.html" style="color: #fff; text-decoration: none; font-size: 16px; display: inline-flex; align-items: center; gap: 5px;">
+            ← Back to Home
+        </a>
+    </div>
+
+    <div class="container">
+        <section class="section">
+            <h2 class="section-title">Our Rooms</h2>
+            
+            <!-- Filters -->
+            <div class="room-filters">
+                <div class="filter-group">
+                    <label for="roomTypeFilter">Room Type:</label>
+                    <select id="roomTypeFilter" onchange="filterRooms()">
+                        <option value="all">All Types</option>
+                        <option value="ac">AC Rooms</option>
+                        <option value="non-ac">Non-AC Rooms</option>
+                        <option value="deluxe">Deluxe Rooms</option>
+                        <option value="suite">Suite Rooms</option>
+                        <option value="family">Family Rooms</option>
+                        <option value="dormitory">Dormitory</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="priceFilter">Price Range:</label>
+                    <select id="priceFilter" onchange="filterRooms()">
+                        <option value="all">All Prices</option>
+                        <option value="0-500">₹0 - ₹500</option>
+                        <option value="500-1000">₹500 - ₹1,000</option>
+                        <option value="1000-2000">₹1,000 - ₹2,000</option>
+                        <option value="2000-3000">₹2,000 - ₹3,000</option>
+                        <option value="3000+">₹3,000+</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Room List -->
+            <div class="room-list" id="roomList">
+                <div class="room-card-list" data-category="ac" data-price="1000">
+                    <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="AC Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">AC Rooms</h3>
+                        <div class="room-price">₹1,000<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Air-conditioned rooms</li>
+                            <li>24/7 hot water</li>
+                            <li>Free Wi-Fi</li>
+                            <li>TV with cable</li>
+                        </ul>
+                        <a href="booking.html?room=ac" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+
+                <div class="room-card-list" data-category="non-ac" data-price="700">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Non-AC Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Non-AC Rooms</h3>
+                        <div class="room-price">₹700<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Well-ventilated rooms</li>
+                            <li>Ceiling fans</li>
+                            <li>Free Wi-Fi</li>
+                            <li>TV with cable</li>
+                        </ul>
+                        <a href="booking.html?room=non-ac" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+
+                <div class="room-card-list" data-category="deluxe" data-price="1500">
+                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Deluxe Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Deluxe Rooms</h3>
+                        <div class="room-price">₹1,500<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Spacious rooms</li>
+                            <li>King-size bed</li>
+                            <li>Mini fridge</li>
+                            <li>Balcony view</li>
+                        </ul>
+                        <a href="booking.html?room=deluxe" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+
+                <div class="room-card-list" data-category="suite" data-price="2500">
+                    <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Suite Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Suite Rooms</h3>
+                        <div class="room-price">₹2,500<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Living area</li>
+                            <li>Separate bedroom</li>
+                            <li>Jacuzzi</li>
+                            <li>Room service</li>
+                        </ul>
+                        <a href="booking.html?room=suite" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+
+                <div class="room-card-list" data-category="family" data-price="2000">
+                    <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Family Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Family Rooms</h3>
+                        <div class="room-price">₹2,000<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Multiple beds</li>
+                            <li>Kitchenette</li>
+                            <li>Extra space</li>
+                            <li>Kid-friendly</li>
+                        </ul>
+                        <a href="booking.html?room=family" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+
+                <div class="room-card-list" data-category="dormitory" data-price="300">
+                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Dormitory" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Dormitory</h3>
+                        <div class="room-price">₹300<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Shared accommodation</li>
+                            <li>Budget-friendly</li>
+                            <li>Locker facility</li>
+                            <li>Common area</li>
+                        </ul>
+                        <a href="booking.html?room=dormitory" class="book-btn">Book Now</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <h3>Samarth Lodging</h3>
+                    <p>Smart Living, Warm Hospitality</p>
+                    <p>Your home away from home with comfortable rooms and excellent service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="main.html">About Us</a></li>
+                        <li><a href="rooms.html">Rooms</a></li>
+                        <li><a href="booking.html">Book Now</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="footer-contact">
+                        <p>📞 <a href="tel:+918888338884">8888338884</a></p>
+                        <p>📞 <a href="tel:+919767338884">9767338884</a></p>
+                        <p>📞 <a href="tel:+919850338884">9850338884</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Samarth Lodging. All rights reserved.</p>
+                <div class="parent">
+                    <div class="child child-1">
+                        <button class="button btn-1" onclick="window.open('https://twitter.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="#1e90ff"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-2">
+                        <button class="button btn-2" onclick="window.open('https://instagram.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#ff00ff"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-3">
+                        <button class="button btn-3" onclick="window.open('https://github.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-4">
+                        <button class="button btn-4" onclick="window.open('https://facebook.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#4267B2"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hide loader when page loads
+        window.addEventListener('load', function() {
+            const skeletonLoader = document.getElementById('skeletonLoader');
+            if (skeletonLoader) {
+                skeletonLoader.style.display = 'none';
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Check login status and update navigation
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const loginLink = document.getElementById('loginLink');
+            const meLink = document.getElementById('meLink');
+
+            if (isLoggedIn) {
+                loginLink.style.display = 'none';
+                meLink.style.display = 'block';
+            } else {
+                loginLink.style.display = 'block';
+                meLink.style.display = 'none';
+            }
+        }
+
+        // Filter rooms function
+        function filterRooms() {
+            const roomTypeFilter = document.getElementById('roomTypeFilter').value;
+            const priceFilter = document.getElementById('priceFilter').value;
+
+            const rooms = document.querySelectorAll('.room-card-list');
+
+            rooms.forEach(room => {
+                const category = room.getAttribute('data-category');
+                const price = parseInt(room.getAttribute('data-price'));
+
+                let showRoom = true;
+
+                // Filter by room type
+                if (roomTypeFilter !== 'all' && category !== roomTypeFilter) {
+                    showRoom = false;
+                }
+
+                // Filter by price range
+                if (priceFilter !== 'all') {
+                    const [min, max] = priceFilter.split('-').map(p => parseInt(p.replace('+', '')));
+                    if (priceFilter === '3000+') {
+                        if (price < 3000) showRoom = false;
+                    } else {
+                        if (price < min || price > max) showRoom = false;
+                    }
+                }
+
+                room.style.display = showRoom ? 'block' : 'none';
+            });
+        }
+
+        // Initialize
+        checkLoginStatus();
+
+        // Border glow effect on room cards
+        const roomCards = document.querySelectorAll('.room-card-list');
+        roomCards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body>
+</html>

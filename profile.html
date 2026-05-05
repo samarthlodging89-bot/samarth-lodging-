@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - Samarth Lodging</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="error-handler.js"></script>
+    <script src="session-utils.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B80797PB0F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-B80797PB0F');
+    </script>
+</head>
+<body>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" id="skeletonLoader">
+        <div class="skeleton-header">
+            <div class="skeleton-logo"></div>
+            <div class="skeleton-title">
+                <div class="skeleton-title-line"></div>
+                <div class="skeleton-title-line short"></div>
+            </div>
+        </div>
+        <div class="skeleton-content">
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.jpg" alt="Samarth Lodging Logo">
+                <span>Samarth Lodging</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="main.html" class="nav-link">About Us</a>
+                <a href="rooms.html" class="nav-link">Rooms</a>
+                <a href="booking.html" class="nav-link">Book Now</a>
+                <a href="login.html" class="nav-link" id="loginLink">Login</a>
+                <a href="profile.html" class="nav-link active" id="meLink" style="display: none;">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div style="padding: 20px;">
+        <a href="index.html" style="color: #fff; text-decoration: none; font-size: 16px; display: inline-flex; align-items: center; gap: 5px;">
+            ← Back to Home
+        </a>
+    </div>
+
+    <!-- Profile Section -->
+    <section class="section profile-section">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar-large" id="profileAvatar">U</div>
+                <h2 id="profileName">User Name</h2>
+                <p id="profileEmail">user@example.com</p>
+            </div>
+
+            <div class="user-profile" id="userProfile" style="display: flex; margin-bottom: 20px;">
+                <div class="user-profile-avatar" id="userAvatar">U</div>
+                <div class="user-profile-info">
+                    <span id="userEmail"></span>
+                    <small id="userStatus">Logged In</small>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-card">
+                    <h3>Personal Information</h3>
+                    <div class="detail-item">
+                        <span class="detail-label">Email:</span>
+                        <span id="detailEmail">user@example.com</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Phone:</span>
+                        <span id="detailPhone">Not provided</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Member Since:</span>
+                        <span id="memberSince">April 2026</span>
+                    </div>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Account Settings</h3>
+                    <button class="edit-btn" onclick="openEditProfileModal()">Edit Profile</button>
+                    <button class="edit-btn" onclick="openChangePasswordModal()">Change Password</button>
+                    <button class="edit-btn" style="background: #f44336; margin-top: 10px;" onclick="openDeleteAccountModal()">Delete Account</button>
+                </div>
+
+                <div class="detail-card">
+                    <h3>Booking History</h3>
+                    <div id="bookingHistory" class="booking-history-list">
+                        <p>Loading bookings...</p>
+                    </div>
+                </div>
+
+                <div class="detail-card" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); align-self: flex-start;">
+                    <h3 style="color: #FFC107;">⚠️ Cancellation Policy</h3>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 10px 0;">To cancel your booking, click the Cancel button in your booking history.</p>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 10px 0;">For refund, please contact our manager after cancellation:</p>
+                    <p style="color: #fff; font-weight: 500; margin: 10px 0;">📞 8888338884</p>
+                    <p style="color: #fff; font-weight: 500; margin: 5px 0;">📞 9767338884</p>
+                    <p style="color: #fff; font-weight: 500; margin: 5px 0;">📞 9850338884</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeEditProfileModal()">&times;</span>
+            <h2>Edit Profile</h2>
+            <form id="editProfileForm">
+                <div class="form-group">
+                    <label for="profileNameInput">Full Name</label>
+                    <input type="text" id="profileNameInput" name="name" required placeholder="Enter your full name" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label for="profileEmailInput">Email</label>
+                    <input type="email" id="profileEmailInput" name="email" required placeholder="Enter your email" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="profilePhoneInput">Phone Number</label>
+                    <input type="tel" id="profilePhoneInput" name="phone" required placeholder="Enter your phone number" autocomplete="tel">
+                </div>
+                <div class="form-group">
+                    <label for="profileAddressInput">Address</label>
+                    <input type="text" id="profileAddressInput" name="address" placeholder="Enter your address" autocomplete="street-address">
+                </div>
+                <div id="editProfileMsg" style="margin-bottom: 10px; font-size: 14px; display: none;"></div>
+                <button type="submit" class="edit-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeChangePasswordModal()">&times;</span>
+            <h2>Change Password</h2>
+            <form id="changePasswordForm">
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" name="currentPassword" required placeholder="Enter current password" autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" required placeholder="Enter new password" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Confirm new password" autocomplete="new-password">
+                </div>
+                <div id="changePasswordMsg" style="margin-bottom: 10px; font-size: 14px; display: none;"></div>
+                <button type="submit" class="edit-btn">Change Password</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="deleteAccountModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closeDeleteAccountModal()">&times;</span>
+            <h2 style="color: #f44336;">⚠️ Delete Account</h2>
+            <div style="background: rgba(244, 67, 54, 0.1); padding: 20px; border-radius: 8px; border: 1px solid rgba(244, 67, 54, 0.3); margin: 20px 0;">
+                <h3 style="color: #f44336; margin: 0 0 12px 0; font-size: 15px;">This action cannot be undone. What will happen:</h3>
+                <ul style="color: rgba(255, 255, 255, 0.9); font-size: 13px; line-height: 1.8; padding-left: 18px; margin: 0;">
+                    <li>You will be <strong>immediately logged out</strong></li>
+                    <li>Your account will be <strong>permanently deactivated</strong></li>
+                    <li>Your <strong>name, email and booking history</strong> are retained only for reservation records and legal compliance — never shared or sold</li>
+                    <li>You can request full data erasure by contacting us at <strong>samarthlodging89@gmail.com</strong></li>
+                </ul>
+            </div>
+            <p style="color: rgba(255, 255, 255, 0.75); font-size: 13px; margin: 0 0 6px 0;">
+                To confirm, type <strong style="color: #f44336; letter-spacing: 2px;">DELETE</strong> in the box below:
+            </p>
+            <input type="text" id="deleteConfirmInput" placeholder="Type DELETE here"
+                style="width: 100%; padding: 12px; background: rgba(255,255,255,0.08); border: 2px solid rgba(244,67,54,0.4); border-radius: 6px; color: #fff; font-size: 16px; letter-spacing: 2px; box-sizing: border-box; margin-bottom: 10px; outline: none;"
+                oninput="checkDeleteInput(this)">
+            <div id="deleteError" style="color: #e74c3c; font-size: 13px; margin-bottom: 10px; display: none;"></div>
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                <button class="edit-btn" style="background: #555; flex: 1;" onclick="closeDeleteAccountModal()">Cancel</button>
+                <button class="edit-btn" id="confirmDeleteBtn" style="background: #888; flex: 1; cursor: not-allowed; opacity: 0.5;" disabled onclick="confirmDeleteAccount()">Yes, Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Refund Info Modal -->
+    <div id="refundModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-modal" onclick="closeRefundModal()">&times;</span>
+            <h2>Booking Cancelled</h2>
+            <p style="color: rgba(255, 255, 255, 0.8); margin: 20px 0;">Your booking has been cancelled successfully.</p>
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(76, 175, 80, 0.3); margin: 20px 0;">
+                <h3 style="color: #4CAF50; margin-bottom: 10px;">Refund Information</h3>
+                <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px;">To receive your refund, please contact our manager:</p>
+                <p style="color: #fff; font-weight: 500; margin-top: 10px;">📞 8888338884</p>
+                <p style="color: #fff; font-weight: 500;">📞 9767338884</p>
+                <p style="color: #fff; font-weight: 500;">📞 9850338884</p>
+            </div>
+            <button class="edit-btn" onclick="closeRefundModal()">Close</button>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <h3>Samarth Lodging</h3>
+                    <p>Smart Living, Warm Hospitality</p>
+                    <p>Your home away from home with comfortable rooms and excellent service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="main.html">About Us</a></li>
+                        <li><a href="rooms.html">Rooms</a></li>
+                        <li><a href="booking.html">Book Now</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="footer-contact">
+                        <p>📞 <a href="tel:+918888338884">8888338884</a></p>
+                        <p>📞 <a href="tel:+919767338884">9767338884</a></p>
+                        <p>📞 <a href="tel:+919850338884">9850338884</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Samarth Lodging. All rights reserved.</p>
+                <div class="parent">
+                    <div class="child child-1">
+                        <button class="button btn-1" onclick="window.open('https://twitter.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="#1e90ff"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-2">
+                        <button class="button btn-2" onclick="window.open('https://instagram.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#ff00ff"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-3">
+                        <button class="button btn-3" onclick="window.open('https://github.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-4">
+                        <button class="button btn-4" onclick="window.open('https://facebook.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#4267B2"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",
+            authDomain: "samrtha-lodging.firebaseapp.com",
+            databaseURL: "https://samrtha-lodging-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "samrtha-lodging",
+            storageBucket: "samrtha-lodging.firebasestorage.app",
+            messagingSenderId: "254916752014",
+            appId: "1:254916752014:web:2bfa52b2f81c70ece78fdf"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // Hide loader when page loads
+        window.addEventListener('load', function() {
+            const skeletonLoader = document.getElementById('skeletonLoader');
+            if (skeletonLoader) {
+                skeletonLoader.style.display = 'none';
+            }
+
+            // Initialize session timeout if logged in
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                sessionUtils.init(30 * 60 * 1000); // 30 minutes
+            }
+        });
+
+        // Check login status and update navigation
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const loginLink = document.getElementById('loginLink');
+            const meLink = document.getElementById('meLink');
+            const userProfile = document.getElementById('userProfile');
+            const userEmail = document.getElementById('userEmail');
+            const userAvatar = document.getElementById('userAvatar');
+            const loginReminder = document.getElementById('loginReminder');
+
+            if (isLoggedIn) {
+                if (loginLink) loginLink.style.display = 'none';
+                if (meLink) meLink.style.display = 'block';
+                if (userProfile) userProfile.style.display = 'block';
+                if (loginReminder) loginReminder.style.display = 'none';
+                const email = sessionStorage.getItem('userEmail');
+                const name = sessionStorage.getItem('userName') || email.split('@')[0];
+                if (userEmail) userEmail.textContent = email;
+                if (userAvatar) userAvatar.textContent = email.charAt(0).toUpperCase();
+
+                // Update profile page details
+                const profileNameEl = document.getElementById('profileName');
+                const profileEmailEl = document.getElementById('profileEmail');
+                const detailEmailEl = document.getElementById('detailEmail');
+                const profileAvatarEl = document.getElementById('profileAvatar');
+
+                if (profileNameEl) profileNameEl.textContent = name;
+                if (profileEmailEl) profileEmailEl.textContent = email;
+                if (detailEmailEl) detailEmailEl.textContent = email;
+                if (profileAvatarEl) profileAvatarEl.textContent = email.charAt(0).toUpperCase();
+
+                // NOTE: loadBookingHistory() is called from DOMContentLoaded, not here, to avoid double-loading
+            } else {
+                if (loginLink) loginLink.style.display = 'block';
+                if (meLink) meLink.style.display = 'none';
+                if (userProfile) userProfile.style.display = 'none';
+                sessionStorage.setItem('redirectedToLogin', 'true');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function logout() {
+            localStorage.setItem('logoutFlag','true');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userId');
+            sessionStorage.clear();
+            auth.signOut().catch(function(){});
+            window.location.href = 'login.html';
+        }
+
+        // Listen for logout events from other tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'logoutEvent') {
+                // Another tab logged out, redirect to login
+                sessionStorage.removeItem('isLoggedIn');
+                sessionStorage.removeItem('userEmail');
+                sessionStorage.removeItem('userName');
+                sessionStorage.removeItem('loginMethod');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Check session when tab becomes visible
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+                if (!isLoggedIn) {
+                    window.location.href = 'login.html';
+                }
+            }
+        });
+
+        // Edit Profile Modal Functions
+        function showProfileMsg(type, msg) {
+            var el = document.getElementById('editProfileMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.style.color = type === 'success' ? '#4CAF50' : '#e74c3c';
+            if (type === 'success') {
+                setTimeout(function() { el.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function showPasswordMsg(type, msg) {
+            var el = document.getElementById('changePasswordMsg');
+            el.textContent = msg;
+            el.style.display = 'block';
+            el.style.color = type === 'success' ? '#4CAF50' : '#e74c3c';
+            if (type === 'success') {
+                setTimeout(function() { el.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function openEditProfileModal() {
+            const modal = document.getElementById('editProfileModal');
+            const name = sessionStorage.getItem('userName') || '';
+            const email = sessionStorage.getItem('userEmail') || '';
+            const phone = sessionStorage.getItem('userPhone') || '';
+            const address = sessionStorage.getItem('userAddress') || '';
+
+            document.getElementById('profileNameInput').value = name;
+            document.getElementById('profileEmailInput').value = email;
+            document.getElementById('profilePhoneInput').value = phone;
+            document.getElementById('profileAddressInput').value = address;
+            document.getElementById('editProfileMsg').style.display = 'none';
+
+            modal.style.display = 'flex';
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('editProfileModal').style.display = 'none';
+            document.getElementById('editProfileMsg').style.display = 'none';
+        }
+
+        async function saveProfile() {
+            const name = document.getElementById('profileNameInput').value.trim();
+            const email = document.getElementById('profileEmailInput').value.trim();
+            const phone = document.getElementById('profilePhoneInput').value.trim();
+            const address = document.getElementById('profileAddressInput').value.trim();
+            const user = auth.currentUser;
+
+            if (!name || !email) {
+                showProfileMsg('error', 'Name and email are required.');
+                return;
+            }
+
+            try {
+                if (user) {
+                    await user.updateProfile({ displayName: name });
+                    if (email !== user.email) {
+                        await user.updateEmail(email);
+                    }
+                }
+
+                if (user) {
+                    await db.ref('users/' + user.uid).update({
+                        name: name,
+                        email: email,
+                        phone: phone || '',
+                        address: address || ''
+                    });
+                }
+
+                sessionStorage.setItem('userName', name);
+                sessionStorage.setItem('userEmail', email);
+                sessionStorage.setItem('userPhone', phone);
+                sessionStorage.setItem('userAddress', address);
+                localStorage.setItem('userName', name);
+                localStorage.setItem('userEmail', email);
+
+                document.getElementById('profileName').textContent = name;
+                document.getElementById('profileEmail').textContent = email;
+                document.getElementById('detailEmail').textContent = email;
+                document.getElementById('detailPhone').textContent = phone || 'Not provided';
+                document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
+                
+                closeEditProfileModal();
+                showProfileMsg('success', 'Profile updated successfully!');
+            } catch (error) {
+                showProfileMsg('error', 'Error updating profile: ' + (error.message || 'Unknown error'));
+            }
+        }
+
+        // Check login status on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+
+            // Mouse movement for detail cards
+            const detailCards = document.querySelectorAll('.detail-card');
+            detailCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+            // Load user profile data
+            const name = sessionStorage.getItem('userName');
+            const phone = sessionStorage.getItem('userPhone');
+            const address = sessionStorage.getItem('userAddress');
+
+            if (name) {
+                document.getElementById('profileName').textContent = name;
+                document.getElementById('profileAvatar').textContent = name.charAt(0).toUpperCase();
+            }
+            if (phone) {
+                document.getElementById('detailPhone').textContent = phone;
+            }
+
+            // Load booking history
+            loadBookingHistory();
+        });
+
+        // Load Booking History from Firebase
+        let allUserBookings = [];
+        let bookingLoadTimeout = null;
+
+        async function loadBookingHistory() {
+            const bookingHistory = document.getElementById('bookingHistory');
+            const userEmail = sessionStorage.getItem('userEmail');
+            const userId = sessionStorage.getItem('userId');
+
+            if (!bookingHistory) return;
+
+            if (!userEmail) {
+                bookingHistory.innerHTML = '<p style="color: rgba(255,255,255,0.7);">Please log in to view your bookings.</p>';
+                return;
+            }
+
+            bookingHistory.innerHTML = '<p style="color: rgba(255,255,255,0.7);">Loading bookings...</p>';
+
+            // 10-second fallback timeout
+            if (bookingLoadTimeout) clearTimeout(bookingLoadTimeout);
+            bookingLoadTimeout = setTimeout(function() {
+                if (bookingHistory.innerHTML.includes('Loading')) {
+                    bookingHistory.innerHTML = '<div class="no-bookings"><p>Unable to load bookings. Please check your connection and refresh.</p><button onclick="loadBookingHistory()" style="margin-top:10px;padding:8px 16px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;">Retry</button></div>';
+                }
+            }, 10000);
+
+            try {
+                // Check if user was reactivated (to hide old bookings from deleted-account period)
+                let reactivatedAt = 0;
+                if (userId) {
+                    try {
+                        const userSnap = await db.ref('users/' + userId).once('value');
+                        const userData = userSnap.val();
+                        if (userData && userData.reactivatedAt) {
+                            reactivatedAt = userData.reactivatedAt;
+                        }
+                    } catch(e) { /* ignore, proceed with all bookings */ }
+                }
+
+                const snapshot = await db.ref('bookings').once('value');
+                clearTimeout(bookingLoadTimeout);
+
+                const data = snapshot.val();
+
+                if (!data) {
+                    bookingHistory.innerHTML = '<div class="no-bookings"><div class="no-bookings-icon">📅</div><p>No bookings yet</p><a href="rooms.html" class="book-now-btn">Book Your First Stay</a></div>';
+                    return;
+                }
+
+                allUserBookings = [];
+                Object.keys(data).forEach(function(key) {
+                    var booking = data[key];
+                    if (booking && booking.email && booking.email.toLowerCase() === userEmail.toLowerCase()) {
+                        // If account was reactivated, only show bookings made after reactivation
+                        const bookingTime = booking.timestamp || 0;
+                        if (reactivatedAt === 0 || bookingTime >= reactivatedAt) {
+                            allUserBookings.push({id: key, ...booking});
+                        }
+                    }
+                });
+
+                if (allUserBookings.length === 0) {
+                    bookingHistory.innerHTML = '<div class="no-bookings"><div class="no-bookings-icon">📅</div><p>No bookings yet</p><a href="rooms.html" class="book-now-btn">Book Your First Stay</a></div>';
+                    return;
+                }
+
+                allUserBookings.sort(function(a, b) { return (b.timestamp || 0) - (a.timestamp || 0); });
+                displayBookings(allUserBookings);
+            } catch (error) {
+                clearTimeout(bookingLoadTimeout);
+                console.error('Error loading booking history:', error);
+                bookingHistory.innerHTML = '<div class="no-bookings"><p>Unable to load bookings. Please try again.</p><button onclick="loadBookingHistory()" style="margin-top:10px;padding:8px 16px;background:#4CAF50;color:white;border:none;border-radius:4px;cursor:pointer;">Retry</button></div>';
+            }
+        }
+
+        // Display bookings with optional filtering
+        function displayBookings(bookings) {
+            const bookingHistory = document.getElementById('bookingHistory');
+
+            if (bookings.length === 0) {
+                bookingHistory.innerHTML = `
+                    <div class="no-bookings">
+                        <div class="no-bookings-icon">📅</div>
+                        <p>No bookings found</p>
+                        <a href="booking.html" class="book-now-btn">Book Your First Stay</a>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            bookings.forEach((booking) => {
+                const isCancellable = booking.status !== 'cancelled' && booking.status !== 'completed';
+                const statusClass = (booking.status || 'Confirmed').toLowerCase();
+                
+                // Handle different date formats
+                let checkInDate, checkOutDate;
+                try {
+                    checkInDate = new Date(booking.checkIn);
+                    checkOutDate = new Date(booking.checkOut);
+                } catch (e) {
+                    checkInDate = new Date();
+                    checkOutDate = new Date();
+                }
+                
+                const formattedCheckIn = checkInDate.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                const formattedCheckOut = checkOutDate.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+                
+                // Handle total amount (might be saved as 'total' or 'totalAmount')
+                const totalAmount = booking.total || booking.totalAmount || 0;
+                
+                html += `
+                    <div class="booking-card">
+                        <div class="booking-card-header">
+                            <div>
+                                <div class="booking-card-title">${booking.roomType || 'Room'}</div>
+                                <div class="booking-card-id">ID: ${booking.id ? booking.id.substring(0, 8) : 'N/A'}</div>
+                            </div>
+                            <div class="booking-card-status ${statusClass}">${booking.status || 'Confirmed'}</div>
+                        </div>
+                        <div class="booking-card-body">
+                            <div class="booking-card-item">
+                                <span class="booking-card-label">Check-in</span>
+                                <span>${formattedCheckIn} at ${booking.checkInTime || '12:00'}</span>
+                            </div>
+                            <div class="booking-card-item">
+                                <span class="booking-card-label">Check-out</span>
+                                <span>${formattedCheckOut} at ${booking.checkOutTime || '11:00'}</span>
+                            </div>
+                            <div class="booking-card-item">
+                                <span class="booking-card-label">Guests</span>
+                                <span>${booking.guests || 1}</span>
+                            </div>
+                            <div class="booking-card-item">
+                                <span class="booking-card-label">Nights</span>
+                                <span>${booking.nights || 1}</span>
+                            </div>
+                        </div>
+                        <div class="booking-card-footer">
+                            <div class="booking-card-price">₹${totalAmount}</div>
+                            <div class="booking-card-actions">
+                                ${isCancellable ? `<button class="cancel-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            bookingHistory.innerHTML = html;
+        }
+
+        // Filter by tab function
+        function filterByTab(tab) {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            if (!tabBtns.length) return;
+            tabBtns.forEach(btn => btn.classList.remove('active'));
+            if (event && event.target) event.target.classList.add('active');
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let filteredBookings = [...allUserBookings];
+
+            if (tab === 'upcoming') {
+                filteredBookings = filteredBookings.filter(booking => {
+                    const checkInDate = new Date(booking.checkIn);
+                    checkInDate.setHours(0, 0, 0, 0);
+                    return checkInDate >= today && booking.status !== 'cancelled' && booking.status !== 'completed';
+                });
+            } else if (tab === 'past') {
+                filteredBookings = filteredBookings.filter(booking => {
+                    const checkInDate = new Date(booking.checkIn);
+                    checkInDate.setHours(0, 0, 0, 0);
+                    return checkInDate < today || booking.status === 'cancelled' || booking.status === 'completed';
+                });
+            }
+
+            displayBookings(filteredBookings);
+        }
+
+        // View booking details function
+        function viewBookingDetails(bookingId) {
+            const booking = allUserBookings.find(b => b.id === bookingId);
+            if (booking) {
+                const bookingHistory = document.getElementById('bookingHistory');
+                const detailDiv = document.createElement('div');
+                detailDiv.style.cssText = 'color: #fff; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 8px; margin: 10px 0; line-height: 1.8;';
+                detailDiv.innerHTML = `<strong>Room:</strong> ${booking.roomType}<br><strong>Check-in:</strong> ${booking.checkIn} at ${booking.checkInTime}<br><strong>Check-out:</strong> ${booking.checkOut} at ${booking.checkOutTime}<br><strong>Guests:</strong> ${booking.guests}<br><strong>Total:</strong> ₹${booking.totalAmount}<br><strong>Status:</strong> ${booking.status || 'Confirmed'}`;
+                bookingHistory.prepend(detailDiv);
+                setTimeout(() => detailDiv.remove(), 10000);
+            }
+        }
+
+        // Filter bookings function
+        function filterBookings() {
+            const statusFilter = document.getElementById('statusFilter');
+            const roomTypeFilter = document.getElementById('roomTypeFilter');
+            const dateFilter = document.getElementById('dateFilter');
+            if (!statusFilter || !roomTypeFilter || !dateFilter) return;
+
+            const sVal = statusFilter.value;
+            const rVal = roomTypeFilter.value;
+            const dVal = dateFilter.value;
+
+            let filteredBookings = [...allUserBookings];
+
+            // Filter by status
+            if (sVal !== 'all') {
+                filteredBookings = filteredBookings.filter(booking => {
+                    const status = (booking.status || 'confirmed').toLowerCase();
+                    return status === sVal;
+                });
+            }
+
+            // Filter by room type
+            if (rVal !== 'all') {
+                filteredBookings = filteredBookings.filter(booking => booking.roomType === rVal);
+            }
+
+            // Filter by date
+            if (dVal) {
+                filteredBookings = filteredBookings.filter(booking => booking.checkIn === dVal);
+            }
+
+            displayBookings(filteredBookings);
+        }
+
+        // Cancel Booking Function
+        async function cancelBooking(bookingId) {
+            try {
+                await db.ref(`bookings/${bookingId}`).update({
+                    status: 'cancelled',
+                    updatedAt: Date.now()
+                });
+                loadBookingHistory();
+                document.getElementById('refundModal').style.display = 'flex';
+            } catch (error) {
+                console.error('Cancel booking error:', error);
+                const bookingHistory = document.getElementById('bookingHistory');
+                const errDiv = document.createElement('div');
+                errDiv.style.cssText = 'color: #e74c3c; padding: 10px; background: rgba(231,76,60,0.1); border-radius: 8px; margin: 10px 0;';
+                errDiv.textContent = 'Error cancelling booking. Please try again.';
+                bookingHistory.prepend(errDiv);
+                setTimeout(() => errDiv.remove(), 5000);
+            }
+        }
+
+        // Delete Account Modal Functions
+        function openDeleteAccountModal() {
+            document.getElementById('deleteConfirmInput').value = '';
+            document.getElementById('deleteError').style.display = 'none';
+            const btn = document.getElementById('confirmDeleteBtn');
+            btn.disabled = true;
+            btn.style.background = '#888';
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            document.getElementById('deleteAccountModal').style.display = 'flex';
+            setTimeout(() => document.getElementById('deleteConfirmInput').focus(), 100);
+        }
+
+        function closeDeleteAccountModal() {
+            document.getElementById('deleteAccountModal').style.display = 'none';
+            document.getElementById('deleteConfirmInput').value = '';
+            document.getElementById('deleteError').style.display = 'none';
+        }
+
+        function checkDeleteInput(input) {
+            const btn = document.getElementById('confirmDeleteBtn');
+            if (input.value === 'DELETE') {
+                btn.disabled = false;
+                btn.style.background = '#f44336';
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.disabled = true;
+                btn.style.background = '#888';
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
+
+        async function confirmDeleteAccount() {
+            const errorEl = document.getElementById('deleteError');
+            const deleteBtn = document.querySelector('#deleteAccountModal .edit-btn[onclick="confirmDeleteAccount()"]');
+
+            // Get current user - try auth.currentUser first, fall back to session
+            const user = auth.currentUser;
+            const userId = user ? user.uid : sessionStorage.getItem('userId');
+
+            if (!userId) {
+                errorEl.textContent = 'You must be logged in to delete your account.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            // Disable button to prevent double-click
+            if (deleteBtn) {
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = 'Deleting...';
+            }
+
+            try {
+                // Soft delete: mark account as deleted in Firebase (keeps data as backup)
+                await db.ref('users/' + userId).update({
+                    accountDeleted: true,
+                    deletedAt: Date.now()
+                });
+
+                // Close modal and show success message
+                closeDeleteAccountModal();
+                // Show small toast notification in bottom-right corner
+                const successDiv = document.createElement('div');
+                successDiv.style.cssText = 'position: fixed; bottom: 24px; right: 24px; background: #2e7d32; color: white; padding: 14px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 10000; box-shadow: 0 4px 16px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; animation: slideIn 0.3s ease;';
+                successDiv.innerHTML = `<span style="font-size:18px;">✓</span> Account deleted successfully`;
+                document.body.appendChild(successDiv);
+
+                // Clear all local/session storage
+                localStorage.setItem('logoutFlag', 'true');
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                localStorage.removeItem('userName');
+                localStorage.removeItem('userId');
+                sessionStorage.clear();
+
+                // Sign out from Firebase
+                auth.signOut().catch(function(){});
+
+                // Redirect to login page
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2500);
+
+            } catch (error) {
+                console.error('Delete account error:', error);
+                errorEl.textContent = 'Error deleting account: ' + (error.message || 'Please try again.');
+                errorEl.style.display = 'block';
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.textContent = 'Yes, Delete My Account';
+                }
+            }
+        }
+
+        // Refund Modal Functions
+        function openRefundModal() {
+            document.getElementById('refundModal').style.display = 'flex';
+        }
+
+        function closeRefundModal() {
+            document.getElementById('refundModal').style.display = 'none';
+        }
+
+        // Change Password Modal Functions
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+            document.getElementById('changePasswordMsg').style.display = 'none';
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+            document.getElementById('changePasswordMsg').style.display = 'none';
+        }
+
+        // Edit Profile Form Submission
+        document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveProfile();
+        });
+
+        // Change Password Form Submission
+        document.getElementById('changePasswordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const userEmail = sessionStorage.getItem('userEmail');
+            const user = auth.currentUser;
+
+            if (!user) {
+                showPasswordMsg('error', 'Please log in to change your password.');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showPasswordMsg('error', 'New passwords do not match.');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showPasswordMsg('error', 'Password must be at least 6 characters.');
+                return;
+            }
+
+            try {
+                const credential = firebase.auth.EmailAuthProvider.credential(userEmail, currentPassword);
+                await user.reauthenticateWithCredential(credential);
+                await user.updatePassword(newPassword);
+
+                closeChangePasswordModal();
+                showPasswordMsg('success', 'Password changed successfully!');
+            } catch (error) {
+                if (error.code === 'auth/wrong-password') {
+                    showPasswordMsg('error', 'Current password is incorrect.');
+                } else if (error.code === 'auth/requires-recent-login') {
+                    showPasswordMsg('error', 'Please log out and log back in before changing your password.');
+                } else {
+                    showPasswordMsg('error', 'Error: ' + error.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

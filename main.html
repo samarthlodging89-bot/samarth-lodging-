@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Samarth Lodging</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="error-handler.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B80797PB0F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-B80797PB0F');
+    </script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script>
+var firebaseConfig = {
+    apiKey: "AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",
+    authDomain: "samrtha-lodging.firebaseapp.com",
+    projectId: "samrtha-lodging",
+    appId: "1:254916752014:web:2bfa52b2f81c70ece78fdf"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+var publicPages = ['login.html', 'index.html', 'rooms.html', 'main.html'];
+var currentPage = window.location.pathname.split('/').pop() || 'main.html';
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    sessionStorage.setItem('isLoggedIn', 'true');
+    sessionStorage.setItem('userEmail', user.email || '');
+    sessionStorage.setItem('userName', user.displayName || (user.email ? user.email.split('@')[0] : ''));
+    sessionStorage.setItem('userId', user.uid || '');
+    
+    localStorage.setItem('userEmail', user.email || '');
+    localStorage.setItem('userName', user.displayName || (user.email ? user.email.split('@')[0] : ''));
+    localStorage.setItem('userId', user.uid || '');
+    if (typeof checkLoginStatus === 'function') checkLoginStatus();
+  } else {
+    if (!publicPages.includes(currentPage)) {
+      window.location.href = 'login.html';
+    }
+  }
+});
+</script>
+</head>
+<body>
+    <!-- Skeleton Loader -->
+    <div class="skeleton-loader" id="skeletonLoader">
+        <div class="skeleton-header">
+            <div class="skeleton-logo"></div>
+            <div class="skeleton-title">
+                <div class="skeleton-title-line"></div>
+                <div class="skeleton-title-line short"></div>
+            </div>
+        </div>
+        <div class="skeleton-content">
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+            <div class="skeleton-card">
+                <div class="skeleton-card-image"></div>
+                <div class="skeleton-card-title"></div>
+                <div class="skeleton-card-text"></div>
+                <div class="skeleton-card-text"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.jpg" alt="Samarth Lodging Logo">
+                <span>Samarth Lodging</span>
+            </div>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="main.html" class="nav-link active">About Us</a>
+                <a href="rooms.html" class="nav-link">Rooms</a>
+                <a href="booking.html" class="nav-link">Book Now</a>
+                <a href="login.html" class="nav-link" id="loginLink">Login</a>
+                <a href="profile.html" class="nav-link" id="meLink" style="display: none;">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header>
+        <div class="header-top">
+            <h2 class="about-us">About Us</h2>
+        </div>
+        <div class="header-content">
+            <img src="logo.jpg" alt="Samarth Lodging Logo" class="header-logo">
+            <div class="header-text">
+                <h1 class="shiny-text">Samarth Lodging</h1>
+                <p>Smart Living, Warm Hospitality</p>
+            </div>
+        </div>
+    </header>
+
+    <div style="padding: 20px;">
+        <a href="index.html" style="color: #fff; text-decoration: none; font-size: 16px; display: inline-flex; align-items: center; gap: 5px;">
+            ← Back to Home
+        </a>
+    </div>
+
+    <div class="container">
+        <section class="section">
+            <h2 class="section-title">Contact Us</h2>
+            <div class="contact-section">
+                <div class="card">
+                  <div class="content">
+                    <div class="front">
+                      <img src="lodge-image.jpg" alt="Samarth Lodging" class="front-img">
+                    </div>
+                    <div class="back">
+                      <ul class="wrapper">
+                        <li class="icon facebook">
+                          <a href="https://facebook.com" target="_blank" class="social-icon-link">
+                            <span class="tooltip">Facebook</span>
+                            <svg viewBox="0 0 320 512" height="1.2em" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        <li class="icon twitter">
+                          <a href="https://twitter.com" target="_blank" class="social-icon-link">
+                            <span class="tooltip">Twitter</span>
+                            <svg height="1.8em" fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" class="twitter">
+                              <path d="M42,12.429c-1.323,0.586-2.746,0.977-4.247,1.162c1.526-0.906,2.7-2.351,3.251-4.058c-1.428,0.837-3.01,1.452-4.693,1.776C34.967,9.884,33.05,9,30.926,9c-4.08,0-7.387,3.278-7.387,7.32c0,0.572,0.067,1.129,0.193,1.67c-6.138-0.308-11.582-3.226-15.224-7.654c-0.64,1.082-1,2.349-1,3.686c0,2.541,1.301,4.778,3.285,6.096c-1.211-0.037-2.351-0.374-3.349-0.914c0,0.022,0,0.055,0,0.086c0,3.551,2.547,6.508,5.923,7.181c-0.617,0.169-1.269,0.263-1.941,0.263c-0.477,0-0.942-0.054-1.392-0.135c0.94,2.902,3.667,5.023,6.898,5.086c-2.528,1.96-5.712,3.134-9.174,3.134c-0.598,0-1.183-0.034-1.761-0.104C9.268,36.786,13.152,38,17.321,38c13.585,0,21.017-11.156,21.017-20.834c0-0.317-0.01-0.633-0.025-0.945C39.763,15.197,41.013,13.905,42,12.429"></path>
+                            </svg>
+                          </a>
+                        </li>
+                        <li class="icon instagram">
+                          <a href="https://instagram.com" target="_blank" class="social-icon-link">
+                            <span class="tooltip">Instagram</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                              <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"></path>
+                            </svg>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-icon">📍</span>
+                        <a href="https://www.google.com/maps/search/?api=1&query=Samarth+lodging+and+boarding+opp+to+hp+petrol+pump+near+balaji+temple+gate+ketkawale+taluka+purandar+dist+Pune" target="_blank" class="phone-link">Samarth lodging and boarding, opp. to hp petrol pump near balaji temple gate, ketkawale taluka purandar dist. Pune</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📞</span>
+                        <a href="tel:+918888338884" class="phone-link">8888338884</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📞</span>
+                        <a href="tel:+919767338884" class="phone-link">9767338884</a>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📞</span>
+                        <a href="tel:+919850338884" class="phone-link">9850338884</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Our Rooms</h2>
+            <div class="rooms-carousel">
+                <div class="room-card" data-category="ac" data-name="AC Rooms" data-rooms="Air-conditioned rooms,24/7 hot water,Free Wi-Fi,TV with cable">
+                    <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="AC Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">AC Rooms</h3>
+                        <div class="room-price">₹1,000<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Air-conditioned rooms</li>
+                            <li>24/7 hot water</li>
+                            <li>Free Wi-Fi</li>
+                            <li>TV with cable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="room-card" data-category="non-ac" data-name="Non-AC Rooms" data-rooms="Well-ventilated rooms,Ceiling fans,Free Wi-Fi,TV with cable">
+                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Non-AC Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Non-AC Rooms</h3>
+                        <div class="room-price">₹700<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Well-ventilated rooms</li>
+                            <li>Ceiling fans</li>
+                            <li>Free Wi-Fi</li>
+                            <li>TV with cable</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="room-card" data-category="deluxe" data-name="Deluxe Rooms" data-rooms="Spacious rooms,King-size bed,Mini fridge,Balcony view">
+                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Deluxe Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Deluxe Rooms</h3>
+                        <div class="room-price">₹1,500<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Spacious rooms</li>
+                            <li>King-size bed</li>
+                            <li>Mini fridge</li>
+                            <li>Balcony view</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="room-card" data-category="suite" data-name="Suite Rooms" data-rooms="Living area,Separate bedroom,Jacuzzi,Room service">
+                    <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Suite Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Suite Rooms</h3>
+                        <div class="room-price">₹2,500<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Living area</li>
+                            <li>Separate bedroom</li>
+                            <li>Jacuzzi</li>
+                            <li>Room service</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="room-card" data-category="family" data-name="Family Rooms" data-rooms="Multiple beds,Kitchenette,Extra space,Kid-friendly">
+                    <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Family Rooms" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Family Rooms</h3>
+                        <div class="room-price">₹2,000<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Multiple beds</li>
+                            <li>Kitchenette</li>
+                            <li>Extra space</li>
+                            <li>Kid-friendly</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="room-card" data-category="dormitory" data-name="Dormitory" data-rooms="Shared accommodation,Budget-friendly,Locker facility,Common area">
+                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Dormitory" class="room-image">
+                    <div class="room-content">
+                        <h3 class="room-name">Dormitory</h3>
+                        <div class="room-price">₹300<span style="font-size: 1rem; font-weight: 400; color: #666;">/night</span></div>
+                        <ul class="room-features">
+                            <li>Shared accommodation</li>
+                            <li>Budget-friendly</li>
+                            <li>Locker facility</li>
+                            <li>Common area</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Nearby Places</h2>
+            <div class="nearby-places">
+                <div class="address-box">
+                    <h3>Our Address</h3>
+                    <p>Samarth Lodging and Boarding<br>
+                    Opp. to HP Petrol Pump<br>
+                    Near Balaji Temple Gate<br>
+                    Ketkawale, Taluka Purandar<br>
+                    Dist. Pune</p>
+                </div>
+                <div class="nearby-landmarks">
+                    <h3>Nearby Landmarks</h3>
+                    <ul>
+                        <li>Balaji Temple</li>
+                        <li>Purandar Fort</li>
+                        <li>Ketkawale Village</li>
+                        <li>HP Petrol Pump</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Policies</h2>
+            <div class="policies-grid">
+                <div class="policy-item">
+                    <h3>Cancellation Policy</h3>
+                    <p>Free cancellation up to 24 hours before check-in. Late cancellations may incur charges.</p>
+                </div>
+                <div class="policy-item">
+                    <h3>Pet Policy</h3>
+                    <p>Pets are not allowed on the property.</p>
+                </div>
+                <div class="policy-item">
+                    <h3>Payment Methods</h3>
+                    <p>We accept cash, UPI, credit/debit cards, and online payments.</p>
+                </div>
+                <div class="policy-item">
+                    <h3>Smoking Policy</h3>
+                    <p>Smoking is not allowed in rooms. Designated smoking areas available.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="cta-container">
+            <a href="booking.html" class="cta-button">Book Your Stay</a>
+        </div>
+    </div>
+
+    <div id="room-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-title" class="modal-title">Room Details</h2>
+            <img id="modal-image" src="" alt="Room" class="modal-image">
+            <div id="modal-services" class="modal-services"></div>
+            <a href="tel:+919876543210" class="modal-book-btn">Book This Room</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <h3>Samarth Lodging</h3>
+                    <p>Smart Living, Warm Hospitality</p>
+                    <p>Your home away from home with comfortable rooms and excellent service.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="main.html">About Us</a></li>
+                        <li><a href="rooms.html">Rooms</a></li>
+                        <li><a href="booking.html">Book Now</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <div class="footer-contact">
+                        <p>📞 <a href="tel:+918888338884">8888338884</a></p>
+                        <p>📞 <a href="tel:+919767338884">9767338884</a></p>
+                        <p>📞 <a href="tel:+919850338884">9850338884</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Samarth Lodging. All rights reserved.</p>
+                <div class="parent">
+                    <div class="child child-1">
+                        <button class="button btn-1" onclick="window.open('https://twitter.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512" fill="#1e90ff"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-2">
+                        <button class="button btn-2" onclick="window.open('https://instagram.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512" fill="#ff00ff"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-3">
+                        <button class="button btn-3" onclick="window.open('https://github.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"></path></svg>
+                        </button>
+                    </div>
+                    <div class="child child-4">
+                        <button class="button btn-4" onclick="window.open('https://facebook.com', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" fill="#4267B2"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hide loader when page loads
+        window.addEventListener('load', function() {
+            const skeletonLoader = document.getElementById('skeletonLoader');
+            if (skeletonLoader) {
+                skeletonLoader.style.display = 'none';
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // Check if mobile device (for informational purpose only)
+        function isMobile() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+        }
+
+        function dismissWarning() {
+            // No-op: mobile-warning element does not exist on this page
+        }
+
+        // Check login status and update navigation
+        function checkLoginStatus() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            const loginLink = document.getElementById('loginLink');
+            const meLink = document.getElementById('meLink');
+
+            if (isLoggedIn) {
+                loginLink.style.display = 'none';
+                meLink.style.display = 'block';
+            } else {
+                loginLink.style.display = 'block';
+                meLink.style.display = 'none';
+            }
+        }
+
+        function logout() {
+            localStorage.setItem('logoutFlag','true');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('userId');
+            sessionStorage.clear();
+            if(auth){auth.signOut().catch(function(){});}
+            window.location.href = 'login.html';
+        }
+
+        // Listen for logout events from other tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'logoutEvent') {
+                // Another tab logged out, redirect to login
+                sessionStorage.removeItem('isLoggedIn');
+                sessionStorage.removeItem('userEmail');
+                sessionStorage.removeItem('userName');
+                sessionStorage.removeItem('loginMethod');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Login status updates only; visibility change does NOT redirect on public pages
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkLoginStatus();
+
+            const roomsCarousel = document.querySelector('.rooms-carousel');
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+            let autoScrollInterval;
+            let isAutoScrolling = true;
+
+            // Auto-scroll function
+            function startAutoScroll() {
+                if (autoScrollInterval) clearInterval(autoScrollInterval);
+                autoScrollInterval = setInterval(() => {
+                    if (!isDown && isAutoScrolling && document.visibilityState === 'visible') {
+                        roomsCarousel.scrollLeft += 1;
+                        // Reset to start when reaching end for infinite loop
+                        if (roomsCarousel.scrollLeft >= roomsCarousel.scrollWidth - roomsCarousel.clientWidth) {
+                            roomsCarousel.scrollLeft = 0;
+                        }
+                    }
+                }, 50);
+            }
+
+            function stopAutoScroll() {
+                if (autoScrollInterval) {
+                    clearInterval(autoScrollInterval);
+                    autoScrollInterval = null;
+                }
+            }
+
+            // Start auto-scroll on load
+            startAutoScroll();
+
+            // Stop auto-scroll when interacting with the section
+            const roomsSection = document.querySelector('.section');
+            if (roomsSection) {
+                roomsSection.addEventListener('click', () => {
+                    isAutoScrolling = false;
+                    stopAutoScroll();
+                    setTimeout(() => {
+                        isAutoScrolling = true;
+                        startAutoScroll();
+                    }, 5000);
+                });
+            }
+
+            // Stop auto-scroll on page scroll
+            window.addEventListener('scroll', () => {
+                isAutoScrolling = false;
+                stopAutoScroll();
+                clearTimeout(window.scrollTimeout);
+                window.scrollTimeout = setTimeout(() => {
+                    isAutoScrolling = true;
+                    startAutoScroll();
+                }, 3000);
+            });
+
+            roomsCarousel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                isAutoScrolling = false;
+                stopAutoScroll();
+                startX = e.pageX - roomsCarousel.offsetLeft;
+                scrollLeft = roomsCarousel.scrollLeft;
+            });
+
+            roomsCarousel.addEventListener('mouseup', () => {
+                isDown = false;
+                setTimeout(() => {
+                    isAutoScrolling = true;
+                    startAutoScroll();
+                }, 3000);
+            });
+
+            roomsCarousel.addEventListener('mouseleave', () => {
+                isDown = false;
+                isAutoScrolling = true;
+                startAutoScroll();
+            });
+
+            roomsCarousel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - roomsCarousel.offsetLeft;
+                const walk = (x - startX) * 2;
+                roomsCarousel.scrollLeft = scrollLeft - walk;
+            });
+
+            // Touch events for mobile
+            roomsCarousel.addEventListener('touchstart', (e) => {
+                isDown = true;
+                isAutoScrolling = false;
+                stopAutoScroll();
+                startX = e.touches[0].pageX - roomsCarousel.offsetLeft;
+                scrollLeft = roomsCarousel.scrollLeft;
+            });
+
+            roomsCarousel.addEventListener('touchend', () => {
+                isDown = false;
+                setTimeout(() => {
+                    isAutoScrolling = true;
+                    startAutoScroll();
+                }, 3000);
+            });
+
+            roomsCarousel.addEventListener('touchmove', (e) => {
+                if (!isDown) return;
+                const x = e.touches[0].pageX - roomsCarousel.offsetLeft;
+                const walk = (x - startX) * 2;
+                roomsCarousel.scrollLeft = scrollLeft - walk;
+            });
+
+        // Border glow effect on room cards
+        const roomCards = document.querySelectorAll('.room-card');
+        roomCards.forEach(card => {
+            let isDragging = false;
+            let startX;
+            let startY;
+
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+
+            card.addEventListener('mousedown', (e) => {
+                isDragging = false;
+                startX = e.clientX;
+                startY = e.clientY;
+            });
+
+            card.addEventListener('mousemove', (e) => {
+                if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) {
+                    isDragging = true;
+                }
+            });
+
+            // Make room cards clickable to redirect to booking section
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', (e) => {
+                if (!isDragging) {
+                    const category = card.getAttribute('data-category');
+                    window.location.href = `booking.html?room=${category}`;
+                }
+            });
+        });
+
+        // Mouse movement for nearby places boxes
+        const nearbyBoxes = document.querySelectorAll('.address-box, .nearby-landmarks');
+        nearbyBoxes.forEach(box => {
+            box.addEventListener('mousemove', (e) => {
+                const rect = box.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                box.style.setProperty('--mouse-x', `${x}px`);
+                box.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Mouse movement for policy items
+        const policyItems = document.querySelectorAll('.policy-item');
+        policyItems.forEach(item => {
+            item.addEventListener('mousemove', (e) => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                item.style.setProperty('--mouse-x', `${x}px`);
+                item.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Close modal
+        const closeModal = document.querySelector('.close-modal');
+        const modal = document.getElementById('room-modal');
+
+        if (closeModal && modal) {
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+
+        // 3D tilt effect on header image
+        const headerImageWrapper = document.querySelector('.header-image-wrapper');
+        const headerImage = document.querySelector('.header-image');
+
+        if (headerImageWrapper && headerImage) {
+            headerImageWrapper.addEventListener('mousemove', (e) => {
+                const rect = headerImageWrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                headerImage.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            headerImageWrapper.addEventListener('mouseleave', () => {
+                headerImage.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+
+        // Prevent default drag behavior on images
+        const roomImages = document.querySelectorAll('.room-image');
+        roomImages.forEach(img => {
+            img.addEventListener('dragstart', (e) => {
+                e.preventDefault();
+            });
+        });
+
+        });
+    </script>
+</body>
+</html>

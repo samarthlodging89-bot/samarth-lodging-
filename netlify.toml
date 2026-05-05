@@ -1,0 +1,11 @@
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "EMAIL_FROM,EMAIL_HOST,EMAIL_PASSWORD,EMAIL_PORT,EMAIL_USER"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://www.googletagmanager.com https://js.stripe.com https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; connect-src 'self' https://*.firebaseio.com https://samrtha-lodging-default-rtdb.asia-southeast1.firebasedatabase.app https://*.googleapis.com https://api.stripe.com https://*.google-analytics.com https://www.gstatic.com; font-src 'self' data:; frame-src https://js.stripe.com https://accounts.google.com;"
+    Permissions-Policy = "ambient-light-sensor=(), camera=(), microphone=()"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
