@@ -1,3 +1,7 @@
+[build]
+  command = ""
+  publish = "."
+
 [build.environment]
   SECRETS_SCAN_OMIT_KEYS = "EMAIL_FROM,EMAIL_HOST,EMAIL_PASSWORD,EMAIL_PORT,EMAIL_USER"
 
