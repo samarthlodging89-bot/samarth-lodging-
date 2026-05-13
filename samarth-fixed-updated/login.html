@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login / Sign Up - Samarth Lodging</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-B80797PB0F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-B80797PB0F');
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{min-height:100vh;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Arial,sans-serif;color:white;}
+h1{margin-bottom:30px;font-size:2rem;font-weight:800;text-align:center;}
+.scene{width:380px;perspective:1000px;}
+.card{width:100%;position:relative;transform-style:preserve-3d;transition:transform 0.6s ease;min-height:460px;}
+.card.flipped{transform:rotateY(180deg);}
+.card__face{position:absolute;width:100%;min-height:460px;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#2a2a3e;border-radius:16px;padding:32px;display:flex;flex-direction:column;gap:14px;}
+.card__face--back{transform:rotateY(180deg);}
+h2{text-align:center;font-size:1.4rem;margin-bottom:4px;}
+.form-group{display:flex;flex-direction:column;gap:6px;width:100%;}
+.form-group label{font-size:0.9rem;color:#ccc;font-weight:600;}
+.form-group input{width:100%;padding:12px 16px;border-radius:8px;border:1px solid #444;background:#1a1a2e;color:white;font-size:1rem;}
+input:focus{outline:none;border-color:#4a90e2;}
+button{width:100%;padding:13px;border-radius:8px;border:none;cursor:pointer;font-size:1rem;font-weight:bold;}
+.btn-google{background:white;color:#333;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-google:hover{background:#f5f5f5;}
+.btn-primary{background:#4a90e2;color:white;}
+.btn-primary:hover{background:#357abd;}
+.divider{text-align:center;color:#888;font-size:0.9rem;}
+.switch-link{text-align:center;color:#aaa;font-size:0.9rem;}
+.switch-link span{color:#4a90e2;cursor:pointer;text-decoration:underline;}
+.error-msg{color:#e74c3c;font-size:0.85rem;text-align:center;min-height:18px;padding:4px 8px;border-radius:4px;transition:all 0.3s ease;}
+.error-msg.visible{display:block;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);}
+.error-msg.hidden{display:none;}
+.file-warning{background:#f39c12;color:#000;padding:15px 25px;border-radius:10px;max-width:500px;text-align:center;margin-bottom:20px;font-size:14px;line-height:1.6;display:none;}
+.file-warning code{background:rgba(0,0,0,0.2);padding:2px 6px;border-radius:3px;font-weight:bold;}
+</style>
+</head>
+<body>
+<div class="file-warning" id="fileWarning">
+  <strong>⚠️ Running from file:// protocol</strong><br>
+  Firebase requires a local server. Run this command in your project folder:<br>
+  <code>npx serve .</code> or <code>python -m http.server 8000</code><br>
+  Then open <code>http://localhost:8000/login.html</code>
+</div>
+<h1>Login / Sign Up</h1>
+<div class="scene">
+  <div class="card" id="card">
+    <div class="card__face card__face--front">
+      <h2>Login to Your Account</h2>
+      <button class="btn-google" id="googleBtn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+        Login with Google
+      </button>
+      <div class="divider">— or —</div>
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" name="email" placeholder="Enter your email" autocomplete="email" required>
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" name="current-password" placeholder="Enter your password" autocomplete="current-password" required>
+      </div>
+      <p class="error-msg hidden" id="loginError"></p>
+      <button class="btn-primary" id="loginBtn">Login</button>
+      <div class="switch-link">No account? <span onclick="flip()">Sign up</span></div>
+    </div>
+    <div class="card__face card__face--back">
+      <h2>Create Account</h2>
+      <button class="btn-google" id="googleSignupBtn">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
+        Sign up with Google
+      </button>
+      <div class="divider">— or —</div>
+      <div class="form-group">
+        <label for="signupName">Full Name</label>
+        <input type="text" id="signupName" name="name" placeholder="Enter your full name" autocomplete="name" required>
+      </div>
+      <div class="form-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" name="email" placeholder="Enter your email" autocomplete="email" required>
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Password (min 6 chars)</label>
+        <input type="password" id="signupPassword" name="new-password" placeholder="Create a password" autocomplete="new-password" required minlength="6">
+      </div>
+      <p class="error-msg hidden" id="signupError"></p>
+      <button class="btn-primary" id="signupBtn">Create Account</button>
+      <div class="switch-link">Have account? <span onclick="flip()">Log in</span></div>
+    </div>
+  </div>
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+(function(){
+  var firebaseConfig={apiKey:"AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",authDomain:"samrtha-lodging.firebaseapp.com",databaseURL:"https://samrtha-lodging-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"samrtha-lodging",storageBucket:"samrtha-lodging.firebasestorage.app",messagingSenderId:"254916752014",appId:"1:254916752014:web:2bfa52b2f81c70ece78fdf"};
+  
+  if(window.location.protocol==='file:'){
+    document.getElementById('fileWarning').style.display='block';
+  }
+  
+  if(!firebase.apps.length){firebase.initializeApp(firebaseConfig);}
+  var auth=firebase.auth();
+  var db=firebase.database();
+  auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  function flip(){document.getElementById('card').classList.toggle('flipped');}
+  window.flip=flip;
+  
+  function showError(id,msg){
+    var el=document.getElementById(id);
+    el.textContent=msg;
+    el.classList.remove('hidden');
+    el.classList.add('visible');
+  }
+  
+  function hideError(id){
+    var el=document.getElementById(id);
+    el.textContent='';
+    el.classList.remove('visible');
+    el.classList.add('hidden');
+  }
+  
+  function getAuthMessage(code){
+    var msgs={
+      'auth/wrong-password':'Wrong password. Please check and try again.',
+      'auth/user-not-found':'No account found with this email. Please sign up first.',
+      'auth/invalid-credential':'Wrong email or password. Please try again.',
+      'auth/invalid-login-credentials':'Wrong email or password. Please try again.',
+      'auth/email-already-in-use':'This email is already registered. Please login instead.',
+      'auth/weak-password':'Password must be at least 6 characters.',
+      'auth/invalid-email':'Please enter a valid email address.',
+      'auth/too-many-requests':'Too many failed attempts. Please wait a few minutes and try again.',
+      'auth/user-disabled':'This account has been disabled. Please contact support.',
+      'auth/network-request-failed':'Network error. Check your internet connection.',
+      'auth/operation-not-supported-in-this-environment':'Firebase requires http or https. Run this site via a local server (e.g., npx serve .)'
+    };
+    return msgs[code]||'Wrong email or password. Please try again.';
+  }
+  
+  function saveSession(user){
+    var name=user.displayName||(user.email?user.email.split('@')[0]:'User');
+    sessionStorage.setItem('isLoggedIn','true');
+    sessionStorage.setItem('userEmail',user.email||'');
+    sessionStorage.setItem('userName',name);
+    sessionStorage.setItem('userId',user.uid||'');
+    localStorage.setItem('userEmail',user.email||'');
+    localStorage.setItem('userName',name);
+    localStorage.setItem('userId',user.uid||'');
+  }
+
+  function sendLoginEmail(user) {
+    var name = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+    var loginTime = new Date().toLocaleString('en-IN', {timeZone:'Asia/Kolkata'});
+    var html = `<!DOCTYPE html>
+    <html><body style="margin:0;padding:0;background:#f0f4f8;font-family:Arial,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4f8;padding:32px 0;">
+        <tr><td align="center">
+          <table width="520" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+            <tr><td style="background:linear-gradient(135deg,#1a1a2e 0%,#2a2a5e 100%);padding:32px 40px;text-align:center;">
+              <h1 style="color:#ffffff;margin:0;font-size:24px;letter-spacing:1px;">🏨 Samarth Lodging</h1>
+              <p style="color:#a0b4d6;margin:8px 0 0;font-size:13px;">Account Security Alert</p>
+            </td></tr>
+            <tr><td style="padding:32px 40px 20px;">
+              <h2 style="color:#1a1a2e;margin:0 0 10px;font-size:20px;">Hi ${name} 👋</h2>
+              <p style="color:#555;line-height:1.7;margin:0;">We noticed a new login to your <strong>Samarth Lodging</strong> account. Here are the details:</p>
+            </td></tr>
+            <tr><td style="padding:0 40px 28px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;overflow:hidden;">
+                <tr><td style="padding:14px 20px;border-bottom:1px solid #e2e8f0;color:#666;font-size:14px;width:40%;">📧 Email</td>
+                    <td style="padding:14px 20px;border-bottom:1px solid #e2e8f0;color:#1a1a2e;font-weight:bold;font-size:14px;">${user.email||''}</td></tr>
+                <tr style="background:#fff;"><td style="padding:14px 20px;color:#666;font-size:14px;">🕐 Time</td>
+                    <td style="padding:14px 20px;color:#1a1a2e;font-weight:bold;font-size:14px;">${loginTime} IST</td></tr>
+              </table>
+            </td></tr>
+            <tr><td style="padding:0 40px 28px;">
+              <div style="background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;padding:16px 20px;">
+                <p style="color:#856404;margin:0;font-size:13px;line-height:1.6;">⚠️ <strong>Not you?</strong> If you did not perform this login, please contact us immediately to secure your account.</p>
+              </div>
+            </td></tr>
+            <tr><td style="padding:0 40px 32px;">
+              <p style="color:#555;line-height:1.8;margin:0;">Thank you for choosing <strong>Samarth Lodging</strong>. We're committed to keeping your account safe. 🙏<br><strong style="color:#1a1a2e;">– The Samarth Lodging Team</strong></p>
+            </td></tr>
+            <tr><td style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px 40px;text-align:center;">
+              <p style="color:#bbb;font-size:11px;margin:0;">This is an automated security alert. Please do not reply to this email.</p><p style="color:#bbb;font-size:11px;margin:6px 0 0;">� 2026 Samarth Lodging. All rights reserved.</p><p style="color:#bbb;font-size:11px;margin:6px 0 0;">� 2025 Samarth Lodging. All rights reserved.</p>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </body></html>`;
+    fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        to: user.email,
+        subject: '🔐 New Login Detected – Samarth Lodging',
+        html: html,
+        text: 'Hi ' + name + ', a new login was detected on your Samarth Lodging account at ' + loginTime + ' IST. If this was not you, please contact us immediately.'
+      })
+    }).catch(function(e){ console.error('Login email error:', e); });
+  }
+  
+  // Only redirect to index.html if user is already authenticated AND not redirected here for login
+  auth.onAuthStateChanged(function(user){
+    if(user){
+      saveSession(user);
+      var justLoggedOut = sessionStorage.getItem('justLoggedOut');
+      var redirectedToLogin = sessionStorage.getItem('redirectedToLogin');
+      var isLoggingIn = sessionStorage.getItem('isLoggingIn');
+      // Always clear these flags when Firebase confirms a live user
+      sessionStorage.removeItem('justLoggedOut');
+      sessionStorage.removeItem('redirectedToLogin');
+      sessionStorage.removeItem('isLoggingIn');
+      // Send login email only on actual login (not page load)
+      if(isLoggingIn){
+        sendLoginEmail(user);
+      }
+      // Always redirect if an explicit login action triggered this state change,
+      // otherwise only redirect if we weren't sent here intentionally (post-logout or auth guard)
+      if(isLoggingIn || (!justLoggedOut && !redirectedToLogin)){
+        window.location.href='index.html';
+      }
+    }
+  });
+  
+  // Check if user just logged out (logout flag set by logout function)
+  if(localStorage.getItem('logoutFlag')==='true'){
+    localStorage.removeItem('logoutFlag');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userId');
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userEmail');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userId');
+    sessionStorage.setItem('justLoggedOut','true');
+  }
+  
+  document.getElementById('googleBtn').addEventListener('click',function(){
+    var provider=new firebase.auth.GoogleAuthProvider();
+    // Signal that an explicit login is in progress — onAuthStateChanged must always redirect
+    sessionStorage.setItem('isLoggingIn','true');
+    sessionStorage.removeItem('justLoggedOut');
+    sessionStorage.removeItem('redirectedToLogin');
+    auth.signInWithPopup(provider).then(function(result){
+      var user = result.user;
+      // Check if this account was soft-deleted
+      db.ref('users/' + user.uid).once('value').then(function(snapshot) {
+        var userData = snapshot.val();
+        if (userData && userData.accountDeleted) {
+          // Reset the deleted flag - treat as fresh account
+          db.ref('users/' + user.uid).update({
+            accountDeleted: false,
+            deletedAt: null,
+            reactivatedAt: Date.now(),
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email
+          });
+        } else if (!userData) {
+          // New Google user - create their record
+          db.ref('users/' + user.uid).set({
+            name: user.displayName || user.email.split('@')[0],
+            email: user.email,
+            createdAt: Date.now()
+          });
+        }
+        saveSession(user);
+        sessionStorage.removeItem('justLoggedOut');
+        sendLoginEmail(user);
+        window.location.href='index.html';
+      }).catch(function() {
+        // If db check fails, still proceed with login
+        saveSession(user);
+        sessionStorage.removeItem('justLoggedOut');
+        sendLoginEmail(user);
+        window.location.href='index.html';
+      });
+    }).catch(function(e){
+      sessionStorage.removeItem('isLoggingIn');
+      showError('loginError',getAuthMessage(e.code)||e.message);
+    });
+  });
+  document.getElementById('googleSignupBtn').addEventListener('click',function(){document.getElementById('googleBtn').click();});
+  
+  document.getElementById('loginBtn').addEventListener('click',function(){
+    var email=document.getElementById('loginEmail').value.trim();
+    var pass=document.getElementById('loginPassword').value;
+    hideError('loginError');
+    if(!email||!pass){showError('loginError','Please enter both email and password.');return;}
+    auth.signInWithEmailAndPassword(email,pass).then(function(r){
+      var user = r.user;
+      // Check if this account was soft-deleted; if so, reset flag (fresh start)
+      db.ref('users/' + user.uid).once('value').then(function(snapshot) {
+        var userData = snapshot.val();
+        if (userData && userData.accountDeleted) {
+          db.ref('users/' + user.uid).update({
+            accountDeleted: false,
+            deletedAt: null,
+            reactivatedAt: Date.now()
+          });
+        }
+        saveSession(user);
+        sendLoginEmail(user);
+        window.location.href='index.html';
+      }).catch(function() {
+        saveSession(user);
+        sendLoginEmail(user);
+        window.location.href='index.html';
+      });
+    }).catch(function(e){
+      showError('loginError',getAuthMessage(e.code));
+    });
+  });
+  
+  document.getElementById('signupBtn').addEventListener('click',function(){
+    var name=document.getElementById('signupName').value.trim();
+    var email=document.getElementById('signupEmail').value.trim();
+    var pass=document.getElementById('signupPassword').value;
+    hideError('signupError');
+    if(!name||!email){showError('signupError','Please fill in your name and email.');return;}
+    if(pass.length<6){showError('signupError','Password must be at least 6 characters.');return;}
+    auth.createUserWithEmailAndPassword(email,pass).then(function(r){
+      r.user.updateProfile({displayName:name}).then(function(){
+        db.ref('users/'+r.user.uid).set({name:name,email:email,createdAt:Date.now()});
+        saveSession(r.user);
+        window.location.href='index.html';
+      });
+    }).catch(function(e){
+      showError('signupError',getAuthMessage(e.code));
+    });
+  });
+  
+  document.getElementById('loginPassword').addEventListener('keypress',function(e){if(e.key==='Enter')document.getElementById('loginBtn').click();});
+  document.getElementById('signupPassword').addEventListener('keypress',function(e){if(e.key==='Enter')document.getElementById('signupBtn').click();});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Samarth Lodging</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-B80797PB0F"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-B80797PB0F');
+    </script>
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            background: rgba(26, 26, 26, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-header h1 {
+            color: #fff;
+            margin: 0 0 10px 0;
+        }
+
+        .admin-header p {
+            color: #ccc;
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(26, 26, 26, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin: 0 0 10px 0;
+        }
+
+        .stat-card .value {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+
+        .bookings-section {
+            background: rgba(26, 26, 26, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bookings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .bookings-header h2 {
+            color: #fff;
+            margin: 0;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .bookings-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .bookings-table th,
+        .bookings-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bookings-table th {
+            color: #fff;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .bookings-table td {
+            color: #ccc;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-confirmed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-cancelled {
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-confirm {
+            background: #4caf50;
+            color: #fff;
+        }
+
+        .btn-cancel {
+            background: #f44336;
+            color: #fff;
+        }
+
+        .btn-view {
+            background: #2196f3;
+            color: #fff;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .no-bookings {
+            text-align: center;
+            padding: 40px;
+            color: #ccc;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #ccc;
+        }
+
+        .login-section {
+            max-width: 400px;
+            margin: 100px auto;
+            background: rgba(26, 26, 26, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-section h2 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 10px;
+            }
+
+            .bookings-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .bookings-table th,
+            .bookings-table td {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bookings-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-buttons {
+                width: 100%;
+            }
+
+            .filter-btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader" style="display: block;"></div>
+
+    <!-- Navigation Header -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="logo.jpg" alt="Samarth Lodging Logo">
+                <span>Samarth Lodging</span>
+            </div>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="main.html" class="nav-link">About Us</a>
+                <a href="booking.html" class="nav-link">Book Now</a>
+                <a href="admin.html" class="nav-link active">Admin</a>
+                <a href="index.html" class="nav-link" id="logoutLink">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="loginSection" class="login-section" style="display: none;">
+        <h2>Admin Login</h2>
+        <form class="login-form" id="loginForm">
+            <label for="adminEmail" class="sr-only">Admin Email</label>
+            <input type="email" id="adminEmail" placeholder="Admin Email" autocomplete="email" required>
+            <label for="adminPassword" class="sr-only">Password</label>
+            <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" required>
+            <button type="submit">Login</button>
+            <div class="error-message" id="loginError"></div>
+        </form>
+    </div>
+
+    <div id="adminDashboard" class="admin-container" style="display: none;">
+        <div class="admin-header">
+            <h1>Admin Dashboard</h1>
+            <p>View and manage all bookings</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Bookings</h3>
+                <div class="value" id="totalBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="value" id="pendingBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Confirmed</h3>
+                <div class="value" id="confirmedBookings">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Cancelled</h3>
+                <div class="value" id="cancelledBookings">0</div>
+            </div>
+        </div>
+
+        <div class="bookings-section">
+            <div class="bookings-header">
+                <h2>All Bookings</h2>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="pending">Pending</button>
+                    <button class="filter-btn" data-filter="confirmed">Confirmed</button>
+                    <button class="filter-btn" data-filter="cancelled">Cancelled</button>
+                </div>
+            </div>
+
+            <div id="bookingsLoading" class="loading">Loading bookings...</div>
+            <div id="noBookings" class="no-bookings" style="display: none;">No bookings found</div>
+            <table class="bookings-table" id="bookingsTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Name</th>
+                        <th>Contact</th>
+                        <th>Address</th>
+                        <th>Guests</th>
+                        <th>Room Type</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0L0jXgqwTa7_62RsA7fJAZWTVPom-lD4",
+            authDomain: "samrtha-lodging.firebaseapp.com",
+            databaseURL: "https://samrtha-lodging-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "samrtha-lodging",
+            storageBucket: "samrtha-lodging.firebasestorage.app",
+            messagingSenderId: "254916752014",
+            appId: "1:254916752014:web:2bfa52b2f81c70ece78fdf"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // Admin email whitelist - only these emails can access the dashboard
+        const ADMIN_EMAILS = ['samarthlodging89@gmail.com'];
+
+        // Check if admin is logged in
+        auth.onAuthStateChanged((user) => {
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                loadBookings();
+            } else if (user && !ADMIN_EMAILS.includes(user.email)) {
+                // Logged in but not an admin
+                auth.signOut();
+                const errorDiv = document.getElementById('loginError');
+                if (errorDiv) errorDiv.textContent = 'Access denied: Admin access only.';
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('adminDashboard').style.display = 'none';
+            } else {
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('adminDashboard').style.display = 'none';
+            }
+        });
+
+        // Login form handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                errorDiv.textContent = '';
+            } catch (error) {
+                errorDiv.textContent = 'Login failed: ' + error.message;
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logoutLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut();
+        });
+
+        // Load bookings from Realtime Database
+        let allBookings = [];
+
+        async function loadBookings() {
+            const loadingDiv = document.getElementById('bookingsLoading');
+            const noBookingsDiv = document.getElementById('noBookings');
+            const tableDiv = document.getElementById('bookingsTable');
+
+            loadingDiv.style.display = 'block';
+            noBookingsDiv.style.display = 'none';
+            tableDiv.style.display = 'none';
+
+            try {
+                const snapshot = await db.ref('bookings').once('value');
+                const data = snapshot.val();
+
+                allBookings = [];
+                if (data) {
+                    Object.keys(data).forEach(key => {
+                        allBookings.push({
+                            id: key,
+                            ...data[key]
+                        });
+                    });
+                    // Sort by timestamp descending
+                    allBookings.sort((a, b) => {
+                        const timeA = a.timestamp || 0;
+                        const timeB = b.timestamp || 0;
+                        return timeB - timeA;
+                    });
+                }
+
+                loadingDiv.style.display = 'none';
+
+                if (allBookings.length === 0) {
+                    noBookingsDiv.style.display = 'block';
+                } else {
+                    tableDiv.style.display = 'table';
+                    renderBookings(allBookings);
+                    updateStats();
+                }
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                loadingDiv.textContent = 'Error loading bookings: ' + error.message;
+            }
+        }
+
+        // Render bookings table
+        function renderBookings(bookings) {
+            const tbody = document.getElementById('bookingsTableBody');
+            tbody.innerHTML = '';
+
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                const guestInfo = booking.maleGuests || booking.femaleGuests || booking.kids ?
+                    `M:${booking.maleGuests || 0} F:${booking.femaleGuests || 0} K:${booking.kids || 0} (Total: ${booking.guests})` :
+                    booking.guests;
+                const paymentInfo = booking.paymentId && booking.paymentId !== 'null' ?
+                    `${booking.paymentId.substring(0, 10)}...` : 'N/A';
+
+                row.innerHTML = `
+                    <td>${booking.id.substring(0, 8)}...</td>
+                    <td>${booking.name}</td>
+                    <td>${booking.phone}</td>
+                    <td>${booking.address || 'N/A'}</td>
+                    <td>${guestInfo}</td>
+                    <td>${booking.roomType}</td>
+                    <td>${booking.checkIn}</td>
+                    <td>${booking.checkOut}</td>
+                    <td>₹${booking.totalAmount}</td>
+                    <td>${paymentInfo}</td>
+                    <td><span class="status-badge status-${booking.status || 'pending'}">${booking.status || 'pending'}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            ${booking.status !== 'confirmed' ? `<button class="action-btn btn-confirm" onclick="updateStatus('${booking.id}', 'confirmed')">Confirm</button>` : ''}
+                            ${booking.status !== 'cancelled' ? `<button class="action-btn btn-cancel" onclick="updateStatus('${booking.id}', 'cancelled')">Cancel</button>` : ''}
+                            <button class="action-btn btn-view" onclick="viewBooking('${booking.id}')">View</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update statistics
+        function updateStats() {
+            document.getElementById('totalBookings').textContent = allBookings.length;
+            document.getElementById('pendingBookings').textContent = allBookings.filter(b => !b.status || b.status === 'pending').length;
+            document.getElementById('confirmedBookings').textContent = allBookings.filter(b => b.status === 'confirmed').length;
+            document.getElementById('cancelledBookings').textContent = allBookings.filter(b => b.status === 'cancelled').length;
+        }
+
+        // Update booking status
+        async function updateStatus(bookingId, status) {
+            if (!confirm(`Are you sure you want to mark this booking as ${status}?`)) return;
+
+            try {
+                await db.ref(`bookings/${bookingId}`).update({
+                    status: status,
+                    updatedAt: Date.now()
+                });
+                loadBookings();
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert('Error updating status: ' + error.message);
+            }
+        }
+
+        // View booking details
+        function viewBooking(bookingId) {
+            const booking = allBookings.find(b => b.id === bookingId);
+            if (!booking) return;
+
+            const details = `
+Booking ID: ${booking.id}
+Name: ${booking.name}
+Phone: ${booking.phone}
+Email: ${booking.email || 'N/A'}
+Room Type: ${booking.roomType}
+Check-in: ${booking.checkIn}
+Check-out: ${booking.checkOut}
+Guests: ${booking.guests}
+Payment Method: ${booking.paymentMethod}
+Total Amount: ₹${booking.totalAmount}
+Status: ${booking.status || 'pending'}
+Timestamp: ${booking.timestamp ? new Date(booking.timestamp).toLocaleString() : 'N/A'}
+            `;
+            alert(details);
+        }
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+                let filteredBookings = allBookings;
+
+                if (filter !== 'all') {
+                    filteredBookings = allBookings.filter(b => b.status === filter);
+                }
+
+                renderBookings(filteredBookings);
+            });
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
